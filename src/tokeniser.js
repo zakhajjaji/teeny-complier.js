@@ -1,4 +1,5 @@
 // Lexical analysis ... tokeniser
+const KEYWORDS = ["let", "func", "if", "else", "return", "print"];
 
 function isDigit(char) {
   return char >= "0" && char <= "9"; // check if the character is a digit
@@ -42,33 +43,108 @@ function readNumber(source, start) {
 }
 
 // function functionName(param1, param2) {
-//     let pointer = param2; 
-//     let buffer = ''; 
+//     let pointer = param2;
+//     let buffer = '';
 //     while(pointer < param1.length && condition(param1[pointer])) {
-//         buffer += param1[pointer]; 
-//         pointer++; 
+//         buffer += param1[pointer];
+//         pointer++;
 //     }
 //     return {
-//         token: { type: "TYPE", value: transform(buffer) }, 
-//         nextPosition: pointer, 
-//     }; 
+//         token: { type: "TYPE", value: transform(buffer) },
+//         nextPosition: pointer,
+//     };
 // }
 
+function readIdentifier(source, start) {
+  // takes the full text and where a word begins
+  let current = start;
+  let value = "";
 
-function readIdentifier(source, start) { // takes the full text and where a word begins
-    let current = start; 
-    let value = ''; 
+  while (
+    current < source.length &&
+    (isLetter(source[current]) || isDigit(source[current]))
+  ) {
+    value += source[current];
+    current++;
+  }
 
-    while (current < source.length && (isLetter(source[current]) || isDigit(source[current]))) {
-        value += source[current]; 
-        current++; 
-    }
-
-    // checking if its a key word 
-    const keywords = ['let', 'func', 'if', 'else', 'return', 'print'];
-    const type = keywords.includes(value) ? 'KEYWORD' : 'IDENTIFIER';
-    return {
-        token: { type: type, value }, 
-        nextPosition: current, 
-    }; 
+  // checking if its a key word
+  const type = KEYWORDS.includes(value) ? "KEYWORD" : "IDENTIFIER";
+  return {
+    token: { type: type, value },
+    nextPosition: current,
+  };
 }
+
+function tokenise(sourceCode) {
+    const tokens = [];
+    let current = 0;
+    let line = 1;
+    let column = 1;
+  
+    while (current < sourceCode.length) {
+      const char = sourceCode[current];
+  
+      // Skip whitespace
+      if (isWhitespace(char)) {
+        if (char === '\n') {
+          line++;
+          column = 1;
+        } else {
+          column++;
+        }
+        current++;
+        continue;
+      }
+  
+      // Read numbers
+      if (isDigit(char)) {
+        const result = readNumber(sourceCode, current);
+        tokens.push({ ...result.token, line, column });
+        const tokenLength = result.nextPosition - current;
+        column += tokenLength;
+        current = result.nextPosition;
+        continue;
+      }
+  
+      // Read identifiers and keywords
+      if (isIdentifier(char)) {
+        const result = readIdentifier(sourceCode, current);
+        tokens.push({ ...result.token, line, column });
+        const tokenLength = result.nextPosition - current;
+        column += tokenLength;
+        current = result.nextPosition;
+        continue;
+      }
+  
+      // Read strings
+      if (isString(char)) {
+        // TODO: Implement readString()
+        const result = readString(sourceCode, current);
+        tokens.push({ ...result.token, line, column });
+        const tokenLength = result.nextPosition - current;
+        column += tokenLength;
+        current = result.nextPosition;
+        continue;
+      }
+  
+      // Read operators
+      if (isOperator(char)) {
+        // TODO: Implement readOperator() and isOperator()
+        const result = readOperator(sourceCode, current);
+        tokens.push({ ...result.token, line, column });
+        const tokenLength = result.nextPosition - current;
+        column += tokenLength;
+        current = result.nextPosition;
+        continue;
+      }
+  
+      // Unknown character
+      throw new Error(`Unexpected character: ${char} at line ${line}, column ${column}`);
+    }
+  
+    return tokens;
+  }
+
+
+module.exports = { tokenise };
