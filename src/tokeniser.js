@@ -146,5 +146,4 @@ function tokenise(sourceCode) {
     return tokens;
   }
 
-
 module.exports = { tokenise };
