@@ -11,7 +11,7 @@
 - 🔤 **Lexical Analysis** - Tokenises Teeny source code
 - 🌳 **Abstract Syntax Tree** - Builds structured representation
 - ⚙️ **Code Generation** - Transpiles to JavaScript
-- 📊 **Pipeline Visualization** - Clear compilation stages
+- 📊 **Pipeline Visualisation** - Clear compilation stages
 -  **Portfolio Ready** - Demonstrates compiler design principles
 
 ---
@@ -132,7 +132,7 @@ console.log(sum);
 teeny-complier-js/
 ├── 📁 src/
 │   ├── 📄 index.js          # Main entry point
-│   ├── 📄 tokeniser.js      # Lexical analyzer
+│   ├── 📄 tokeniser.js      # Lexical analyser
 │   └── 📄 traverser.js      # AST traverser
 ├── 📄 package.json          # Project configuration
 ├── 📄 README.md             # This file
