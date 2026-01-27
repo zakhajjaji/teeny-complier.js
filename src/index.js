@@ -1,4 +1,5 @@
 // Main compiler entry point
+
 const { tokenise } = require('./tokeniser');
 
 function compile(sourceCode) {

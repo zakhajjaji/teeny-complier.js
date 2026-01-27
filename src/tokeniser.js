@@ -1,6 +1,7 @@
 // Lexical analysis ... tokeniser
 const KEYWORDS = ["let", "func", "if", "else", "return", "print"];
 
+// helper functions to check if the character is a digit, etc
 function isDigit(char) {
   return char >= "0" && char <= "9"; // check if the character is a digit
 }
@@ -21,8 +22,8 @@ function isString(char) {
   return char === '"' || char === "'"; // check if the character is a string
 }
 
-function isDecimal(char) {
-  return isDigit(char) || char === "."; // check if the character is a decimal
+function isOperator(char) {
+  return ['+', '-', '*', '/', '=', '<', '>', '!'].includes(char);
 }
 
 // Simple read function that reads numbers first
@@ -72,6 +73,54 @@ function readIdentifier(source, start) {
   const type = KEYWORDS.includes(value) ? "KEYWORD" : "IDENTIFIER";
   return {
     token: { type: type, value },
+    nextPosition: current,
+  };
+}
+
+const escapeMap = {
+  '"': '"', // \" becomes "
+  '\\': '\\', // \\ becomes \
+  'n': '\n', // \n becomes newline
+  't': '\t',
+};
+
+function readString(source, start) {
+  let current = start; 
+  const quote = source[current];
+  current ++; 
+
+  let value = ''; 
+
+  while(current < source.length && source[current] !== quote) {
+    if(source[current] === '\\') {
+      current++; 
+      if(current < source.length) {
+        value += escapeMap[source[current]] || source[current];
+      }
+    } else {
+      value += source[current];
+    }
+    current++; 
+  }
+  if(current < source.length) {
+    current++; 
+  }
+  return {
+    token: { type: "STRING", value },
+    nextPosition: current,
+  };
+}
+
+
+function readOperator(source, start) {
+  let current = start; 
+  let value = ""; 
+  while(current < source.length && isOperator(source[current])){
+    value += source[current];
+    current ++
+  }
+  return {
+    token: { type: "OPERATOR", value },
     nextPosition: current,
   };
 }
@@ -147,3 +196,4 @@ function tokenise(sourceCode) {
   }
 
 module.exports = { tokenise };
+
