@@ -11,6 +11,19 @@ function parse(tokens) {
       current++;
       return { type: 'StringLiteral', value: token.value };
     }
+    if (token.type === 'IDENTIFIER') {
+      current++; 
+      return { type: 'Identifier', name: token.value };
+    }
+    if (token.type === 'OPERATOR' ) {
+      current++;
+      return { type: 'Operator', value: token.value };
+    }
+    if (token.type === 'KEYWORD') {
+      current++;
+      return { type: 'Keyword', value: token.value };
+    }
+    throw new Error(`Unknown token: ${token.type}`);
   }
   const ast = {
     type: 'Program',
