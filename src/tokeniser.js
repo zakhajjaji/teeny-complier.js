@@ -196,4 +196,5 @@ function tokenise(sourceCode) {
   }
 
 module.exports = { tokenise };
+module.exports = { KEYWORDS };
 

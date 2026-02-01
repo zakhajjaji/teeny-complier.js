@@ -1,51 +1,56 @@
+const KEYWORDS = ["let", "func", "if", "else", "return", "print"];
+
 function parse(tokens) {
   let current = 0;
-
-  function walk() {
-    let token = tokens[current];
-    if (token.type === 'NUMBER') {
-      current++;
-      return { type: 'NumberLiteral', value: token.value };
-    }
-    if (token.type === 'STRING') {
-      current++;
-      return { type: 'StringLiteral', value: token.value };
-    }
-    if (token.type === 'IDENTIFIER') {
-      current++;
-      return { type: 'Identifier', name: token.value };
-    }
-    if (token.type === 'WHITESPACE') {
-      current++;
-      return { type: 'Whitespace', value: token.value };
-    }
-    if (token.type === 'KEYWORD' && token.value === 'let') {
-      current++; 
-      let name = walk(); // getting the identifier 
-      current++; // assuming a '=' after, we skip
-      let init = walk(); // getting the initial value, 10 or 'hello'
-      return {
-        type: 'VariableDeclaration', 
-        declarations: [{
-          id: name, 
-          init: init
-        }]
-      }
-    }
-    if (token.type === 'OPERATOR') {
-      current++; 
-      return {
-        type: 'Operator', 
-        value: token.value 
-      };
-    }
-
-    throw new Error(`Unknown token: ${token.type}`);
-  }
   const ast = {
     type: 'Program',
     body: [],
   };
+
+  function walk() {
+    let token = tokens[current];
+    let node; 
+    if (token.type === 'NUMBER') {
+      current++;
+      node = { type: 'NumberLiteral', value: token.value };
+    } else if (token.type === 'STRING') {
+      current++; 
+      node = { type: 'StringLiteral', value: token.value };
+    } else if (token.type === 'IDENTIFIER') {
+      current++; 
+      node = { type: 'Identifier', name: token.value };
+    } else if (token.type === 'WHITESPACE') {
+      current++; 
+      return walk(); // this skips whitepsace and parses the next token instead
+    } else if (token.type === 'KEYWORD' && KEYWORDS.includes(token.value)) {
+      current++; 
+      let name = walk(); 
+      current++; 
+      let init = walk(); 
+      return {
+        type: 'VariableDeclaration',
+        declarations: [{  // ← Need this array wrapper
+          id: name,
+          init: init
+        }]
+      };
+    } else {
+      throw new Error(`Unknown token: ${token.type}`);  
+    }
+    if (node && current < tokens.length && tokens[current].type === 'OPERATOR') {
+      let operator = tokens[current].value; 
+      current++;
+      let right = walk(); 
+      return {
+        type: 'BinaryExpression',
+        left: node,
+        operator: operator,
+        right: right
+      };
+    }
+    return node;
+  }
+
 
   while (current < tokens.length) {
     ast.body.push(walk());
