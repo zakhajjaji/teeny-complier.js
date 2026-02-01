@@ -7,18 +7,39 @@ function parse(tokens) {
       current++;
       return { type: 'NumberLiteral', value: token.value };
     }
-    if (token.type === 'STRING' & token.value === 'func') {
+    if (token.type === 'STRING') {
       current++;
-      return { type: 'FunctionDeclaration', name: token.value, parameters: [], body: [] };
+      return { type: 'StringLiteral', value: token.value };
     }
-    if (token.type === 'IDENTIFIER' & token.value === '(') {
+    if (token.type === 'IDENTIFIER') {
       current++;
-      return { type: 'CallExpression', callee: token.value, arguments: [] };
+      return { type: 'Identifier', name: token.value };
     }
-    if (token.type === 'OPERATOR' & token.value === '+') {
+    if (token.type === 'WHITESPACE') {
       current++;
-      return { type: 'BinaryExpression', left: token.value, operator: token.value, right: token.value };
+      return { type: 'Whitespace', value: token.value };
     }
+    if (token.type === 'KEYWORD' && token.value === 'let') {
+      current++; 
+      let name = walk(); // getting the identifier 
+      current++; // assuming a '=' after, we skip
+      let init = walk(); // getting the initial value, 10 or 'hello'
+      return {
+        type: 'VariableDeclaration', 
+        declarations: [{
+          id: name, 
+          init: init
+        }]
+      }
+    }
+    if (token.type === 'OPERATOR') {
+      current++; 
+      return {
+        type: 'Operator', 
+        value: token.value 
+      };
+    }
+
     throw new Error(`Unknown token: ${token.type}`);
   }
   const ast = {
