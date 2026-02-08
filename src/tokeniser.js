@@ -26,6 +26,10 @@ function isOperator(char) {
   return ['+', '-', '*', '/', '=', '<', '>', '!'].includes(char);
 }
 
+function isPunctuation(char) {
+  return ['[', ']', '{', '}', '(', ')', ',', '.', ';', ':', '?'].includes(char);
+}
+
 // Simple read function that reads numbers first
 function readNumber(source, start) {
   let current = start;
@@ -188,6 +192,13 @@ function tokenise(sourceCode) {
         continue;
       }
   
+      if (isPunctuation(char)) {
+        tokens.push({ type: 'PUNCTUATION', value: char, line, column }); 
+        column++; 
+        current++; 
+        continue;
+      }
+      
       // Unknown character
       throw new Error(`Unexpected character: ${char} at line ${line}, column ${column}`);
     }
@@ -195,6 +206,5 @@ function tokenise(sourceCode) {
     return tokens;
   }
 
-module.exports = { tokenise };
-module.exports = { KEYWORDS };
+module.exports = { tokenise, KEYWORDS };
 

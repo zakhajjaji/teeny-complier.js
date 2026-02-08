@@ -18,10 +18,25 @@ function parse(tokens) {
       node = { type: 'StringLiteral', value: token.value };
     } else if (token.type === 'IDENTIFIER') {
       current++; 
-      node = { type: 'Identifier', name: token.value };
+      node = { type:'Identifier', name: token.value };
     } else if (token.type === 'WHITESPACE') {
       current++; 
       return walk(); // this skips whitepsace and parses the next token instead
+    } else if (token.type === 'PUNCTUATION' && token.value === '[') {
+      current++; // 'skip '['
+      const elements = [];
+      while(current < tokens.length && tokens[current].value !== ']') {
+        if (tokens[current].type !== 'WHITESPACE' && tokens[current].value !== ',') {
+          elements.push(walk());
+        } else {
+          current++;
+        }
+      }
+      current++; // skip ']'
+      return {
+        type: 'ArrayExpression',
+        elements
+      };
     } else if (token.type === 'KEYWORD' && KEYWORDS.includes(token.value)) {
       current++; 
       let name = walk(); 
@@ -57,6 +72,8 @@ function parse(tokens) {
   }
   return ast;
 }
+
+module.exports = { parse };
 
 // Token source: The token array comes from tokenise() in tokeniser.js, which converts source code into tokens.
 // How it works: current tracks the array index. 
