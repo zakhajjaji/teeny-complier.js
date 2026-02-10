@@ -8,6 +8,9 @@ function parse(tokens) {
   };
 
   function walk() {
+    if (current >= tokens.length) {
+      return null; // End of tokens
+    }
     let token = tokens[current];
     let node; 
     if (token.type === 'NUMBER') {
@@ -21,7 +24,11 @@ function parse(tokens) {
       node = { type:'Identifier', name: token.value };
     } else if (token.type === 'WHITESPACE') {
       current++; 
-      return walk(); // this skips whitepsace and parses the next token instead
+      return walk(); 
+    // this skips whitepsace and parses the next token instead
+    } else if (token.type === 'PUNCTUATION' && token.value === ';') {
+      current++; 
+      return walk(); 
     } else if (token.type === 'PUNCTUATION' && token.value === '[') {
       current++; // 'skip '['
       const elements = [];
@@ -37,6 +44,17 @@ function parse(tokens) {
         type: 'ArrayExpression',
         elements
       };
+    } else if (token.type === 'KEYWORD' && token.value === 'return') {
+        current++; 
+
+         const argument = (current < tokens.length && 
+                       !(tokens[current].type === 'PUNCTUATION' && tokens[current].value === ';'))
+        ? walk() 
+        : null;
+        return {
+          type: 'ReturnStatement',
+          argument: argument
+        };
     } else if (token.type === 'KEYWORD' && KEYWORDS.includes(token.value)) {
       current++; 
       let name = walk(); 
