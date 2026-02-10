@@ -69,6 +69,19 @@ function parse(tokens) {
         throw new Error('Expected closing bracket ]');
       }
     }
+
+    // Check for AssignmentExpression (x = 5 or arr[0] = 5)
+    if (node && (node.type === 'Identifier' || node.type === 'MemberExpression') 
+        && current < tokens.length && tokens[current].type === 'OPERATOR' && tokens[current].value === '=') {
+      current++; // skip '='
+      const right = walk(); // parse the right-hand side
+      return {
+        type: 'AssignmentExpression',
+        left: node,
+        operator: '=',
+        right: right
+      };
+    }
     
     if (node && current < tokens.length && tokens[current].type === 'OPERATOR') {
       let operator = tokens[current].value; 
