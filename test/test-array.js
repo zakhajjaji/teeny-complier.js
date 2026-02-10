@@ -1,5 +1,5 @@
-import { parse } from '../src/parser.js';
-import { tokenise } from '../src/tokeniser.js';
+const { parse } = require('../src/parser');
+const { tokenise } = require('../src/tokeniser');
 
 const testCases = [
     '[1, 2, 3]',
@@ -7,6 +7,7 @@ const testCases = [
     '[]',
     '["hello", "world"]',
     '["hello", "world", 1, 2, 3]',
+    '[1, 2, 3][0]',
 ]
 
 testCases.forEach((sourceCode, index) => {
