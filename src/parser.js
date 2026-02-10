@@ -54,12 +54,12 @@ function parse(tokens) {
     }
     
     // Check for MemberExpression (arr[0]) after parsing identifier/expression
-    if (node && current < tokens.length && tokens[current].type === 'PUNCTUATION' && tokens[current].value === '[') {
+    while (node && current < tokens.length && tokens[current].type === 'PUNCTUATION' && tokens[current].value === '[') {
       current++; // skip '['
       const property = walk(); // parse the index/property
       if (current < tokens.length && tokens[current].value === ']') {
         current++; // skip ']'
-        return {
+        node = {
           type: 'MemberExpression',
           object: node,
           property: property,
