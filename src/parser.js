@@ -33,7 +33,7 @@ function parse(tokens) {
         }
       }
       current++; // skip ']'
-      return {
+      node = {
         type: 'ArrayExpression',
         elements
       };
@@ -42,7 +42,7 @@ function parse(tokens) {
       let name = walk(); 
       current++; 
       let init = walk(); 
-      return {
+      node = {
         type: 'VariableDeclaration',
         declarations: [{  // ← Need this array wrapper
           id: name,
