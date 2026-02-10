@@ -52,6 +52,24 @@ function parse(tokens) {
     } else {
       throw new Error(`Unknown token: ${token.type}`);  
     }
+    
+    // Check for MemberExpression (arr[0]) after parsing identifier/expression
+    if (node && current < tokens.length && tokens[current].type === 'PUNCTUATION' && tokens[current].value === '[') {
+      current++; // skip '['
+      const property = walk(); // parse the index/property
+      if (current < tokens.length && tokens[current].value === ']') {
+        current++; // skip ']'
+        return {
+          type: 'MemberExpression',
+          object: node,
+          property: property,
+          computed: true
+        };
+      } else {
+        throw new Error('Expected closing bracket ]');
+      }
+    }
+    
     if (node && current < tokens.length && tokens[current].type === 'OPERATOR') {
       let operator = tokens[current].value; 
       current++;
