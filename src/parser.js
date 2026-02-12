@@ -1,4 +1,4 @@
-const KEYWORDS = ["let", "func", "if", "else", "return", "print"];
+const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for"];
 
 function parse(tokens) {
   let current = 0;
@@ -85,22 +85,81 @@ function parse(tokens) {
           consequent: consequent,
           alternate: alternate
         }
-    
-    } else if (token.type === 'KEYWORD' && KEYWORDS.includes(token.value)) {
-      current++; 
-      let name = walk(); 
-      current++; 
-      let init = walk(); 
-      node = {
-        type: 'VariableDeclaration',
-        declarations: [{  // ← Need this array wrapper
-          id: name,
-          init: init
-        }]
-      };
-    } else {
-      throw new Error(`Unknown token: ${token.type}`);  
-    }
+      } else if (token.type === 'KEYWORD' && token.value === 'for') {
+        current++; 
+        if (current >= tokens.length || tokens[current].value !== '(') {
+          throw new Error('Expected ( after for condition');
+        }
+        current++; 
+        let init = null;
+        if (current < tokens.length && tokens[current].value !== ';') {
+          const beforeWalk = current; // Save position before walk()
+          init = walk(); console.log('After init walk, current token:', tokens[current]);
+          while (current < tokens.length && tokens[current].type === 'WHITESPACE') {
+            current++;
+          }
+          if (current < tokens.length && tokens[current].value !== ';') {
+            // walk() consumed too much, so it needs to find the semicolon
+            while (current < tokens.length && tokens[current].value !== ';') {
+              current++; // Skip until it finds ';'
+            }
+          }
+        }
+        // Skip the ';' after init
+        if (current >= tokens.length || tokens[current].value !== ';') {
+          throw new Error('Expected ; after for init');
+        }
+        current++;
+
+        let test = null; 
+        if (current < tokens.length && tokens[current].value !== ';') {
+          test = walk();
+        }
+        console.log('After test walk, current token:', tokens[current]);
+        if (current >= tokens.length || tokens[current].value !== ';') {
+          throw new Error('Expected ; after test');
+        }
+        current++;
+        console.log('After skipping test ;, current token:', tokens[current]);
+        let update = null;
+        if (current < tokens.length && tokens[current].value !== ')') {
+          update = walk();
+          console.log('After update walk, current token:', tokens[current]);
+        }
+        if (current >= tokens.length || tokens[current].value !== ')') {
+          throw new Error('Expected ) after update');
+        }
+        current++;
+        const body = walk(); // to parse the body of the for loop. 
+        return {
+          type: 'ForStatement',
+          init: init, 
+          test: test, 
+          update: update,
+          body: body
+        }
+      } else if (token.type === 'KEYWORD' && KEYWORDS.includes(token.value)) {
+        current++; 
+        
+        if(current >= tokens.length || tokens[current].type !== 'IDENTIFIER') {
+          throw new Error('Expected identifier after let keyword'); 
+        }
+        const name = { type: 'Identifier', name: tokens[current].value };
+        current++; // this skips '=' if present in the declaration
+        if(current < tokens.length && tokens[current].value === '=') {
+          current++;
+        }
+
+        const initValue = walk(); // parse the initial value - could be a simple expression or a complex one/ added to variable declaration node. 
+
+        node = {
+          type: 'VariableDeclaration',
+          declarations: [{  // Need this array wrapper
+            id: name,
+            init: initValue
+          }]
+        };
+      }
     
     // Check for MemberExpression (arr[0]) after parsing identifier/expression
     while (node && current < tokens.length && tokens[current].type === 'PUNCTUATION' && tokens[current].value === '[') {

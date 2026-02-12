@@ -1,5 +1,5 @@
 // Lexical analysis ... tokeniser
-const KEYWORDS = ["let", "func", "if", "else", "return", "print"];
+const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for"];
 
 // helper functions to check if the character is a digit, etc
 function isDigit(char) {
