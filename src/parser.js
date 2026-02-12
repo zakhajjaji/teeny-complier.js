@@ -55,6 +55,37 @@ function parse(tokens) {
           type: 'ReturnStatement',
           argument: argument
         };
+     
+      } else if (token.type === 'KEYWORD' && token.value === 'if') {
+        current++;   
+
+        if (current >= tokens.length || tokens[current].value !== '(') {
+          throw new Error('Expected ( after if condition');
+        }
+        current ++;
+
+        let test = null; 
+        if (current < tokens.length && tokens[current].value !== ')') {
+          test = walk();
+        }
+
+        if (current >= tokens.length || tokens[current].value !== ')') {
+          throw new Error('Expected ) after if condition');
+        }
+        current ++;
+        const consequent = walk(); 
+        let alternate = null; 
+        if (current < tokens.length && tokens[current].type === 'KEYWORD' && tokens[current].value === 'else') {
+          current++; 
+          alternate = walk();
+        }
+        return {
+          type: 'IfStatement',
+          test: test,
+          consequent: consequent,
+          alternate: alternate
+        }
+    
     } else if (token.type === 'KEYWORD' && KEYWORDS.includes(token.value)) {
       current++; 
       let name = walk(); 
@@ -117,7 +148,10 @@ function parse(tokens) {
 
 
   while (current < tokens.length) {
-    ast.body.push(walk());
+    const result = walk();
+    if (result !== null) {
+      ast.body.push(result);
+    }
   }
   return ast;
 }
