@@ -1,5 +1,5 @@
 // Lexical analysis ... tokeniser
-const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for"];
+const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for", "while"];
 
 // helper functions to check if the character is a digit, etc
 function isDigit(char) {
@@ -172,7 +172,7 @@ function tokenise(sourceCode) {
   
       // Read strings
       if (isString(char)) {
-        // TODO: Implement readString()
+       
         const result = readString(sourceCode, current);
         tokens.push({ ...result.token, line, column });
         const tokenLength = result.nextPosition - current;
@@ -183,7 +183,6 @@ function tokenise(sourceCode) {
   
       // Read operators
       if (isOperator(char)) {
-        // TODO: Implement readOperator() and isOperator()
         const result = readOperator(sourceCode, current);
         tokens.push({ ...result.token, line, column });
         const tokenLength = result.nextPosition - current;
