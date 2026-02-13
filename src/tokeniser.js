@@ -4,7 +4,7 @@ const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for", "while"
 // helper functions to check if the character is a digit, etc
 function isDigit(char) {
   return char >= "0" && char <= "9"; // check if the character is a digit
-}
+} 
 
 function isLetter(char) {
   return (char >= "a" && char <= "z") || (char >= "A" && char <= "Z"); // check if the character is a letter
@@ -28,7 +28,7 @@ function isOperator(char) {
 
 function isPunctuation(char) {
   return ['[', ']', '{', '}', '(', ')', ',', '.', ';', ':', '?'].includes(char);
-}
+} 
 
 // Simple read function that reads numbers first
 function readNumber(source, start) {
@@ -40,6 +40,7 @@ function readNumber(source, start) {
     value += source[current];
     current++;
   }
+
 
   return {
     token: { type: "NUMBER", value: parseFloat(value) },

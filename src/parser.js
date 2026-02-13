@@ -60,7 +60,7 @@ function parse(tokens) {
         current++;   
 
         if (current >= tokens.length || tokens[current].value !== '(') {
-          throw new Error('Expected ( after if condition');
+          throw new Error('Expected ( after if condition on line ' + tokens[current].line + ' column ' + tokens[current].column );
         }
         current ++;
 
@@ -70,7 +70,7 @@ function parse(tokens) {
         }
 
         if (current >= tokens.length || tokens[current].value !== ')') {
-          throw new Error('Expected ) after if condition');
+          throw new Error('Expected ) after if condition on line ' + tokens[current].line + ' column ' + tokens[current].column);
         }
         current ++;
         const consequent = walk(); 
@@ -90,17 +90,22 @@ function parse(tokens) {
         current++;   
 
         if (current >= tokens.length || tokens[current].value !== '(') {
-          throw new Error('Expected ( after while condition');
+          throw new Error('Expected ( after while condition on line ' + tokens[current].line + ' column ' + tokens[current].column);
         }
         current ++;
 
         let test = null; 
+
         if (current >= tokens.length || tokens[current].value === ')') {
-          throw new Error('Expected expression after while condition');
+          const token = current >= tokens.length ? null : tokens[current];
+          const found = token ? token.value : 'end of input';
+          const line = token ? token.line : '?';
+          const column = token ? token.column : '?';
+          throw new Error(`Expected expression after while condition, but found '${found}' at line ${line} column ${column}`);
         }
         test = walk();
         if (current >= tokens.length || tokens[current].value !== ')') {
-          throw new Error('Expected ) after while condition');
+          throw new Error('Expected ) after while condition on line ' + tokens[current].line + ' column ' + tokens[current].column);
         }
         current ++;
         const body = walk(); 
@@ -113,7 +118,7 @@ function parse(tokens) {
       } else if (token.type === 'KEYWORD' && token.value === 'for') {
         current++; 
         if (current >= tokens.length || tokens[current].value !== '(') {
-          throw new Error('Expected ( after for condition');
+          throw new Error('Expected ( after for condition on line ' + tokens[current].line + ' column ' + tokens[current].column);
         }
         current++; 
         let init = null;
@@ -132,7 +137,7 @@ function parse(tokens) {
         }
         // Skip the ';' after init
         if (current >= tokens.length || tokens[current].value !== ';') {
-          throw new Error('Expected ; after for init');
+          throw new Error('Expected ; after for init on line ' + tokens[current].line + ' column ' + tokens[current].column);
         }
         current++;
 
@@ -142,7 +147,7 @@ function parse(tokens) {
         }
         console.log('After test walk, current token:', tokens[current]);
         if (current >= tokens.length || tokens[current].value !== ';') {
-          throw new Error('Expected ; after test');
+          throw new Error('Expected ; after test on line ' + tokens[current].line + ' column ' + tokens[current].column);
         }
         current++;
         console.log('After skipping test ;, current token:', tokens[current]);
@@ -152,7 +157,7 @@ function parse(tokens) {
           console.log('After update walk, current token:', tokens[current]);
         }
         if (current >= tokens.length || tokens[current].value !== ')') {
-          throw new Error('Expected ) after update');
+          throw new Error('Expected ) after update on line ' + tokens[current].line + ' column ' + tokens[current].column);
         }
         current++;
         const body = walk(); // to parse the body of the for loop. 
@@ -167,7 +172,7 @@ function parse(tokens) {
         current++; 
         
         if(current >= tokens.length || tokens[current].type !== 'IDENTIFIER') {
-          throw new Error('Expected identifier after let keyword'); 
+          throw new Error('Expected identifier after let keyword on line ' + tokens[current].line + ' column ' + tokens[current].column); 
         }
         const name = { type: 'Identifier', name: tokens[current].value };
         current++; // this skips '=' if present in the declaration
@@ -199,7 +204,7 @@ function parse(tokens) {
           computed: true
         };
       } else {
-        throw new Error('Expected closing bracket ]');
+        throw new Error('Expected closing bracket ] on line ' + tokens[current].line + ' column ' + tokens[current].column  );
       }
     }
 
