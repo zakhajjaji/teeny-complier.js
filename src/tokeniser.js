@@ -1,10 +1,10 @@
 // Lexical analysis ... tokeniser
-const KEYWORDS = ["let", "func", "if", "else", "return", "print"];
+const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for", "while"];
 
 // helper functions to check if the character is a digit, etc
 function isDigit(char) {
   return char >= "0" && char <= "9"; // check if the character is a digit
-}
+} 
 
 function isLetter(char) {
   return (char >= "a" && char <= "z") || (char >= "A" && char <= "Z"); // check if the character is a letter
@@ -26,6 +26,10 @@ function isOperator(char) {
   return ['+', '-', '*', '/', '=', '<', '>', '!'].includes(char);
 }
 
+function isPunctuation(char) {
+  return ['[', ']', '{', '}', '(', ')', ',', '.', ';', ':', '?'].includes(char);
+} 
+
 // Simple read function that reads numbers first
 function readNumber(source, start) {
   let current = start;
@@ -36,6 +40,7 @@ function readNumber(source, start) {
     value += source[current];
     current++;
   }
+
 
   return {
     token: { type: "NUMBER", value: parseFloat(value) },
@@ -168,7 +173,7 @@ function tokenise(sourceCode) {
   
       // Read strings
       if (isString(char)) {
-        // TODO: Implement readString()
+       
         const result = readString(sourceCode, current);
         tokens.push({ ...result.token, line, column });
         const tokenLength = result.nextPosition - current;
@@ -179,7 +184,6 @@ function tokenise(sourceCode) {
   
       // Read operators
       if (isOperator(char)) {
-        // TODO: Implement readOperator() and isOperator()
         const result = readOperator(sourceCode, current);
         tokens.push({ ...result.token, line, column });
         const tokenLength = result.nextPosition - current;
@@ -188,6 +192,13 @@ function tokenise(sourceCode) {
         continue;
       }
   
+      if (isPunctuation(char)) {
+        tokens.push({ type: 'PUNCTUATION', value: char, line, column }); 
+        column++; 
+        current++; 
+        continue;
+      }
+      
       // Unknown character
       throw new Error(`Unexpected character: ${char} at line ${line}, column ${column}`);
     }
@@ -195,5 +206,5 @@ function tokenise(sourceCode) {
     return tokens;
   }
 
-module.exports = { tokenise };
+module.exports = { tokenise, KEYWORDS };
 
