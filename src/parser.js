@@ -1,4 +1,4 @@
-const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for"];
+const KEYWORDS = ["let", "func", "if", "else", "return", "print", "for", "while"];
 
 function parse(tokens) {
   let current = 0;
@@ -85,6 +85,31 @@ function parse(tokens) {
           consequent: consequent,
           alternate: alternate
         }
+        
+      } else if (token.type === 'KEYWORD' && token.value === 'while') {
+        current++;   
+
+        if (current >= tokens.length || tokens[current].value !== '(') {
+          throw new Error('Expected ( after while condition');
+        }
+        current ++;
+
+        let test = null; 
+        if (current >= tokens.length || tokens[current].value === ')') {
+          throw new Error('Expected expression after while condition');
+        }
+        test = walk();
+        if (current >= tokens.length || tokens[current].value !== ')') {
+          throw new Error('Expected ) after while condition');
+        }
+        current ++;
+        const body = walk(); 
+        return {
+          type: 'WhileStatement',
+          test: test,
+          body: body,
+        };
+     
       } else if (token.type === 'KEYWORD' && token.value === 'for') {
         current++; 
         if (current >= tokens.length || tokens[current].value !== '(') {
