@@ -1,6 +1,7 @@
 // Main compiler entry point
 
 const { tokenise } = require('./tokeniser');
+const { parse } = require('./parser');
 
 function compile(sourceCode) {
     // Tokenise the source code
@@ -12,27 +13,12 @@ function compile(sourceCode) {
     return javascriptCode;
 }
 
-function tokenise(sourceCode) {
-    const tokens = [];
-    return tokens;
-}
-
-function parse(tokens) {
-    const ast = [];
-    return ast;
-}
-
-function traverse(ast) {
-    const javascriptCode = [];
-    return javascriptCode;
-}
-
 function generateJavaScript(ast) {
     const javascriptCode = [];
     return javascriptCode;
 }
 
-
+module.exports = { compile };
 
 // compile is the main function that will be called to compile the source code
 // sourceCode is a parameter, it is a variable that will HOLD whatever code string you pass in later 
