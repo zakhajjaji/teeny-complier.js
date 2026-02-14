@@ -20,6 +20,9 @@ const { parse } = require('../src/parser');
 
 const numberLiteralTestCases = [
     '1',
+    '42',
+    '100',
+    '102023',
 ]
 
 console.log('Testing number literal parsing...\n');
@@ -29,13 +32,18 @@ numberLiteralTestCases.forEach((sourceCode, index) => {
     try {
         const tokens = tokenise(sourceCode); 
         console.log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
-
         const ast = parse(tokens); 
         console.log('AST:', JSON.stringify(ast, null, 2)); 
 
-        const nodeType = ast.body[0].type; 
-        const nodeValue = ast.body[0].value; 
-        console.log(`Success: ${nodeType} with value ${nodeValue}`);
+        const expectedValue = parseInt(sourceCode); 
+        const nodeType = ast.body[0]?.type; 
+        const nodeValue = ast.body[0]?.value;
+
+        if (nodeType === 'NumberLiteral' && nodeValue === expectedValue) {
+            console.log(`Success: ${nodeType} with value ${nodeValue}`);
+        } else {
+            console.log(`Failure: expected NumberLiteral with expected value of ${expectedValue}, and got ${nodeType}${nodeValue !== undefined ? ` with value ${nodeValue}` : ''} instead`);
+        }
     } catch (error) {
         console.error('Error:', error.message);
     }
