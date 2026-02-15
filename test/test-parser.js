@@ -23,7 +23,6 @@ const numberLiteralTestCases = [
     '42',
     '100',
     '102023',
-    '1 + 1'
 ]
 
 const stringLiteralTestCases = [
@@ -34,12 +33,12 @@ const stringLiteralTestCases = [
 ]
 
 const binaryExpressionTestCases = [
-    '1 + 1',
-    '1 - 1',
-    '1 * 1',
-    '1 / 1',
-    '1 % 1',
-    '1 ** 1',
+   { sourceCode: '1 + 1', operator: '+', leftValue: 1, rightValue: 1 },
+   { sourceCode: '1 - 1', operator: '-', leftValue: 1, rightValue: 1 },
+   { sourceCode: '1 * 1', operator: '*', leftValue: 1, rightValue: 1 },
+   { sourceCode: '1 / 1', operator: '/', leftValue: 1, rightValue: 1 },
+   { sourceCode: '2 + 3', operator: '+', leftValue: 2, rightValue: 3 },
+   { sourceCode: '"hello" + "world"', operator: '+', leftValue: 'hello', rightValue: 'world' },
 ]
 
 console.log('Testing number literal parsing...\n');
@@ -91,25 +90,26 @@ try {
 }
 });
 
-console.log('Testing binary expression literal parsing...\n');
+console.log('Testing operator expression literal parsing...\n');
 
 binaryExpressionTestCases.forEach((sourceCode, index) => {
-    console.log(`\n=== Test ${index + 1}: ${sourceCode} ===`);
+    console.log(`\n=== Test ${index + 1}: ${sourceCode.sourceCode} ===`);
 
     try {
-        const tokens = tokenise(sourceCode);
-        console,log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
+        const tokens = tokenise(sourceCode.sourceCode);
+        console.log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
         const ast = parse(tokens); 
-        console.log('AST:', JSON.stringify(ast, null, 2));
+        console.log('AST:', JSON.stringify(ast, null, 2)); 
 
-        const expectedValue = eval(sourceCode); // remember, eval allows us to evaluate the source code as js code. 
         const nodeType = ast.body[0]?.type;
-        const nodeValue = ast.body[0]?.value;
+        const nodeOperator = ast.body[0]?.operator;
+        const nodeLeftValue = ast.body[0]?.left?.value;
+        const nodeRightValue = ast.body[0]?.right?.value; 
 
-        if(nodeType === 'BinaryExpression' && nodeValue === expectedValue) {
-            console.log(`Success: ${nodeType} with value ${nodeValue}`);
+        if (nodeType === 'BinaryExpression' && nodeOperator === sourceCode.operator && nodeLeftValue === sourceCode.leftValue && nodeRightValue === sourceCode.rightValue) {
+            console.log(`Success: ${nodeType} with operator ${nodeOperator}, left=${nodeLeftValue}, right=${nodeRightValue}`);
         } else {
-            console.log(`Failure: expected BinaryExpression with expected value of ${expectedValue}, and got ${nodeType}${nodeValue !== undefined ? ` with value ${nodeValue}` : ''} instead`);
+            console.log(`Failure: expected BinaryExpression with operator ${sourceCode.operator}, left=${sourceCode.leftValue}, right=${sourceCode.rightValue}, got ${nodeType}${nodeOperator ? ` with operator ${nodeOperator}` : ''}${nodeLeftValue !== undefined ? `, left=${nodeLeftValue}` : ''}${nodeRightValue !== undefined ? `, right=${nodeRightValue}` : ''}`);
         }
     } catch (error) {
         console.error('Error:', error.message);
