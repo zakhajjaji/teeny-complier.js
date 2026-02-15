@@ -58,7 +58,9 @@ const identifierTestCases = [
 
 const memberExpressionTestCases = [
     { sourceCode: 'arr[0]', object: 'arr', property: 0 },
-    { sourceCode: 'arr[0]', object: 'arr', property: 0 },
+    { sourceCode: 'arr[1]', object: 'arr', property: 1 },
+    { sourceCode: 'myArray[5]', object: 'myArray', property: 5 },
+    { sourceCode: 'x[10]', object: 'x', property: 10 },
 ]
 
 console.log('Testing number literal parsing...\n');
