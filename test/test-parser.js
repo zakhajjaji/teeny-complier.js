@@ -41,6 +41,14 @@ const binaryExpressionTestCases = [
    { sourceCode: '"hello" + "world"', operator: '+', leftValue: 'hello', rightValue: 'world' },
 ]
 
+const arrayExpressionTestCases = [
+    { sourceCode: '[1, 2, 3]', elements: [1, 2, 3] },
+    { sourceCode: '[1]', elements: [1] },
+    { sourceCode: '[]', elements: [] },
+    { sourceCode: '["hello", "world"]', elements: ['hello', 'world'] },
+    { sourceCode: '["hello", "world", 1, 2, 3]', elements: ['hello', 'world', 1, 2, 3] },
+]
+
 console.log('Testing number literal parsing...\n');
 
 numberLiteralTestCases.forEach((sourceCode, index) => {
@@ -110,6 +118,30 @@ binaryExpressionTestCases.forEach((sourceCode, index) => {
             console.log(`Success: ${nodeType} with operator ${nodeOperator}, left=${nodeLeftValue}, right=${nodeRightValue}`);
         } else {
             console.log(`Failure: expected BinaryExpression with operator ${sourceCode.operator}, left=${sourceCode.leftValue}, right=${sourceCode.rightValue}, got ${nodeType}${nodeOperator ? ` with operator ${nodeOperator}` : ''}${nodeLeftValue !== undefined ? `, left=${nodeLeftValue}` : ''}${nodeRightValue !== undefined ? `, right=${nodeRightValue}` : ''}`);
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+});
+
+console.log('Testing array expression literal parsing...\n');
+
+arrayExpressionTestCases.forEach((sourceCode, index) => {
+    console.log(`\n=== Test ${index + 1}: ${sourceCode.sourceCode} ===`);
+
+    try {
+        const tokens = tokenise(sourceCode.sourceCode);
+        console.log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
+        const ast = parse(tokens);
+        console.log('AST:', JSON.stringify(ast, null, 2));
+
+        const nodeType = ast.body[0]?.type;
+        const nodeElements = ast.body[0]?.elements;
+
+        if(nodeType === 'ArrayExpression' && nodeElements.length === sourceCode.elements.length && nodeElements.every((element, index) => element.value === sourceCode.elements[index])) {
+            console.log(`Success: ${nodeType} with ${nodeElements.length} elements: ${nodeElements.map(e => e.value).join(', ')}`);
+        } else {
+            console.log(`Failure: expected ArrayExpression with ${sourceCode.elements.length} elements: ${sourceCode.elements.join(', ')}, got ${nodeType}${nodeElements !== undefined ? ` with ${nodeElements.length} elements: ${nodeElements.map(e => e.value).join(', ')}` : ''}`);
         }
     } catch (error) {
         console.error('Error:', error.message);
