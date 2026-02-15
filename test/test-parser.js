@@ -49,6 +49,13 @@ const arrayExpressionTestCases = [
     { sourceCode: '["hello", "world", 1, 2, 3]', elements: ['hello', 'world', 1, 2, 3] },
 ]
 
+const identifierTestCases = [
+    'x',
+    'y',
+    'z',
+    'myVar'
+]
+
 console.log('Testing number literal parsing...\n');
 
 numberLiteralTestCases.forEach((sourceCode, index) => {
@@ -142,6 +149,31 @@ arrayExpressionTestCases.forEach((sourceCode, index) => {
             console.log(`Success: ${nodeType} with ${nodeElements.length} elements: ${nodeElements.map(e => e.value).join(', ')}`);
         } else {
             console.log(`Failure: expected ArrayExpression with ${sourceCode.elements.length} elements: ${sourceCode.elements.join(', ')}, got ${nodeType}${nodeElements !== undefined ? ` with ${nodeElements.length} elements: ${nodeElements.map(e => e.value).join(', ')}` : ''}`);
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+});
+
+console.log('Testing identifier literal parsing...\n');
+
+identifierTestCases.forEach((sourceCode, index) => {
+    console.log(`\n=== Test ${index + 1}: ${sourceCode} ===`);
+
+    try {
+        const tokens = tokenise(sourceCode);
+        console.log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
+        const ast = parse(tokens);
+        console.log('AST:', JSON.stringify(ast, null, 2));
+
+        const expectedName = sourceCode;
+        const nodeType = ast.body[0]?.type;
+        const nodeName = ast.body[0]?.name;
+
+        if(nodeType === 'Identifier' && nodeName === sourceCode) {
+            console.log(`Success: ${nodeType} with name ${nodeName}`);
+        } else {
+            console.log(`Failure: expected Identifier with name ${sourceCode}, got ${nodeType}${nodeName !== undefined ? ` with name ${nodeName}` : ''}`);
         }
     } catch (error) {
         console.error('Error:', error.message);
