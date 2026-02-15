@@ -23,6 +23,14 @@ const numberLiteralTestCases = [
     '42',
     '100',
     '102023',
+    '1 + 1'
+]
+
+const stringLiteralTestCases = [
+    '"hello"',
+    '"world"',
+    '""',  // Empty string to test for empty string literal
+    '"test123"',
 ]
 
 console.log('Testing number literal parsing...\n');
@@ -47,4 +55,29 @@ numberLiteralTestCases.forEach((sourceCode, index) => {
     } catch (error) {
         console.error('Error:', error.message);
     }
+});
+
+console.log('Testing string literal parsing...\n');
+
+stringLiteralTestCases.forEach((sourceCode, index) => {
+    console.log(`\n=== Test ${index + 1}: ${sourceCode} ===`); 
+
+try { 
+    const tokens = tokenise(sourceCode); 
+    console.log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
+    const ast = parse(tokens); 
+    console.log('ASTL:', JSON.stringify(ast, null, 2)); 
+
+    const expectedValue = sourceCode.slice(1, -1);
+    const nodeType = ast.body[0]?.type; 
+    const nodeValue = ast.body[0]?.value;
+
+    if(nodeType === 'StringLiteral' && nodeValue === expectedValue) {
+        console.log(`Success: ${nodeType} with value ${nodeValue}`)
+    } else {
+        console.log(`Failure: expected StringLiteral with expected value of "${expectedValue}", and got ${nodeType}${nodeValue !== undefined ? ` with value "${nodeValue}"` : ''} instead`);
+    }
+} catch (error) {
+    console.error('Error:', error.message);
+}
 });
