@@ -71,11 +71,11 @@ const assignmentExpressionTestCases = [
 ]
 
 const returnStatementTestCases = [
-    { sourceCode: 'return 5', value: 5 },
-    { sourceCode: 'return "hello"', value: 'hello' },
-    { sourceCode: 'return arr[0]', value: 'arr[0]' },
-    { sourceCode: 'return myArray[5]', value: 'myArray[5]' },
-    { sourceCode: 'return x[10]', value: 'x[10]' },
+    { sourceCode: 'return arr[0]', argumentType: 'MemberExpression', argumentObject: 'arr', argumentProperty: 0 },
+    { sourceCode: 'return myArray[5]', argumentType: 'MemberExpression', argumentObject: 'myArray', argumentProperty: 5 },
+    { sourceCode: 'return x[10]', argumentType: 'MemberExpression', argumentObject: 'x', argumentProperty: 10 },
+    { sourceCode: 'return 5', argumentType: 'NumberLiteral', argumentValue: 5 },
+    { sourceCode: 'return "hello"', argumentType: 'StringLiteral', argumentValue: 'hello' },
 ]
 
 console.log('Testing number literal parsing...\n');
@@ -239,27 +239,22 @@ assignmentExpressionTestCases.forEach((sourceCode, index) => {
         
         const nodeType = ast.body[0]?.type;
         const nodeLeftType = ast.body[0]?.left?.type;
-        const nodeLeftName = ast.body[0]?.left?.name; // For Identifier
-        const nodeLeftObject = ast.body[0]?.left?.object?.name; // For MemberExpression
-        const nodeLeftProperty = ast.body[0]?.left?.property?.value; // For MemberExpression
+        const nodeLeftName = ast.body[0]?.left?.name; // For identifier
+        const nodeLeftObject = ast.body[0]?.left?.object?.name; // For member expression
+        const nodeLeftProperty = ast.body[0]?.left?.property?.value; // For member expression
         const nodeOperator = ast.body[0]?.operator; 
         const nodeRightType = ast.body[0]?.right?.type;     
         const nodeRightValue = ast.body[0]?.right?.value;
 
-        // Check Identifier case
+        // checks for identifier case, important for this assingment.
         const identifierMatch = nodeLeftType === 'Identifier' && 
                                nodeLeftName === sourceCode.leftName &&
                                nodeOperator === sourceCode.operator &&
                                nodeRightType === sourceCode.rightType &&
                                nodeRightValue === sourceCode.rightValue;
 
-        // Check MemberExpression case
-        const memberExpressionMatch = nodeLeftType === 'MemberExpression' &&
-                                      nodeLeftObject === sourceCode.leftObject &&
-                                      nodeLeftProperty === sourceCode.leftProperty &&
-                                      nodeOperator === sourceCode.operator &&
-                                      nodeRightType === sourceCode.rightType &&
-                                      nodeRightValue === sourceCode.rightValue;
+        // checks for member expression case. 
+        const memberExpressionMatch = nodeLeftType === 'MemberExpression' && nodeLeftObject === sourceCode.leftObject && nodeLeftProperty === sourceCode.leftProperty && nodeOperator === sourceCode.operator && nodeRightType === sourceCode.rightType && nodeRightValue === sourceCode.rightValue;
 
         if (nodeType === 'AssignmentExpression' && (identifierMatch || memberExpressionMatch)) {
             if (nodeLeftType === 'Identifier') {
@@ -278,4 +273,43 @@ assignmentExpressionTestCases.forEach((sourceCode, index) => {
             console.error('Error:', error.message);
         }
     });
+
+console.log('Testing return statement literal parsing...\n');
+
+returnStatementTestCases.forEach((sourceCode, index) => {
+    console.log(`\n=== Test ${index + 1}: ${sourceCode.sourceCode} ===`);
+
+    try {
+        const tokens = tokenise(sourceCode.sourceCode); 
+        console.log('Tokens:', tokens.map(t => `${t.type}:${t.value}`).join(' ')); 
+        const ast = parse(tokens); 
+        console.log('AST:', JSON.stringify(ast, null, 2)); 
     
+        const nodeType = ast.body[0]?.type;
+        const nodeArgumentType = ast.body[0]?.argument?.type;
+        const nodeArgumentObject = ast.body[0]?.argument?.object?.name;
+        const nodeArgumentProperty = ast.body[0]?.argument?.property?.value;
+        const nodeArgumentValue = ast.body[0]?.argument?.value;
+        const nodeArgumentName = ast.body[0]?.argument?.name;
+      
+        const argumentName = sourceCode.argumentName;
+        const argumentObject = sourceCode.argumentObject;
+        const argumentProperty = sourceCode.argumentProperty;
+        const argumentValue = sourceCode.argumentValue;     
+        const argumentType = sourceCode.argumentType;
+
+        const identifierMatch = nodeArgumentType === 'Identifier' && nodeArgumentName === argumentName;
+        const memberExpressionMatch = nodeArgumentType === 'MemberExpression' && nodeArgumentObject === argumentObject && nodeArgumentProperty === argumentProperty;
+
+        const numberLiteralMatch = nodeArgumentType === 'NumberLiteral' && nodeArgumentValue === argumentValue;
+        const stringLiteralMatch = nodeArgumentType === 'StringLiteral' && nodeArgumentValue === argumentValue;
+   
+        if (nodeType === 'ReturnStatement' && (identifierMatch || memberExpressionMatch || numberLiteralMatch || stringLiteralMatch)) {
+            console.log(`Success: ${nodeType} with argument ${nodeArgumentType} ${nodeArgumentName}${nodeArgumentObject !== undefined ? `[${nodeArgumentProperty}]` : ''}${nodeArgumentValue !== undefined ? ` ${nodeArgumentValue}` : ''}`);
+        } else {
+            console.log(`Failure: expected ReturnStatement with argument ${nodeArgumentType} ${nodeArgumentName}${nodeArgumentObject !== undefined ? `[${nodeArgumentProperty}]` : ''}${nodeArgumentValue !== undefined ? ` ${nodeArgumentValue}` : ''}, got ${nodeType}${nodeArgumentType !== undefined ? ` with argument ${nodeArgumentType} ${nodeArgumentName}${nodeArgumentObject !== undefined ? `[${nodeArgumentProperty}]` : ''}${nodeArgumentValue !== undefined ? ` ${nodeArgumentValue}` : ''}` : ''}${nodeArgumentObject !== undefined ? `, argument ${nodeArgumentObject}` : ''}${nodeArgumentProperty !== undefined ? `, argument ${nodeArgumentProperty}` : ''}${nodeArgumentValue !== undefined ? `, argument ${nodeArgumentValue}` : ''}`);
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+});
