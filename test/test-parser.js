@@ -56,6 +56,11 @@ const identifierTestCases = [
     'myVar'
 ]
 
+const memberExpressionTestCases = [
+    { sourceCode: 'arr[0]', object: 'arr', property: 0 },
+    { sourceCode: 'arr[0]', object: 'arr', property: 0 },
+]
+
 console.log('Testing number literal parsing...\n');
 
 numberLiteralTestCases.forEach((sourceCode, index) => {
@@ -166,7 +171,6 @@ identifierTestCases.forEach((sourceCode, index) => {
         const ast = parse(tokens);
         console.log('AST:', JSON.stringify(ast, null, 2));
 
-        const expectedName = sourceCode;
         const nodeType = ast.body[0]?.type;
         const nodeName = ast.body[0]?.name;
 
@@ -174,6 +178,31 @@ identifierTestCases.forEach((sourceCode, index) => {
             console.log(`Success: ${nodeType} with name ${nodeName}`);
         } else {
             console.log(`Failure: expected Identifier with name ${sourceCode}, got ${nodeType}${nodeName !== undefined ? ` with name ${nodeName}` : ''}`);
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+});
+
+console.log('Testing member expression literal parsing...\n');
+
+memberExpressionTestCases.forEach((sourceCode, index) => {
+    console.log(`\n=== Test ${index + 1}: ${sourceCode.sourceCode} ===`);
+
+    try {
+        const tokens = tokenise(sourceCode.sourceCode);
+        console.log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
+        const ast = parse(tokens);
+        console.log('AST:', JSON.stringify(ast, null, 2));
+
+        const nodeType = ast.body[0]?.type;
+        const nodeObject = ast.body[0]?.object;
+        const nodeProperty = ast.body[0]?.property;
+
+        if(nodeType === 'MemberExpression' && nodeObject.type === 'Identifier' && nodeObject.name === sourceCode.object && nodeProperty.type === 'NumberLiteral' && nodeProperty.value === sourceCode.property) {
+            console.log(`Success: ${nodeType} with object ${nodeObject.name}, property ${nodeProperty.value}`);
+        } else {
+            console.log(`Failure: expected MemberExpression with object ${sourceCode.object}, property ${sourceCode.property}, got ${nodeType}${nodeObject !== undefined ? ` with object ${nodeObject.name}` : ''}${nodeProperty !== undefined ? `, property ${nodeProperty.value}` : ''}`);
         }
     } catch (error) {
         console.error('Error:', error.message);
