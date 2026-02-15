@@ -1,17 +1,8 @@
 const { tokenise } = require('../src/tokeniser');
 const { parse } = require('../src/parser');
 
-// Complete list of AST node types: 
-// Program — root node (always wraps everything)
-// NumberLiteral — numbers like 1, 42
-// StringLiteral — strings like "hello"
-// Identifier — variable names like x, myVar
-// BinaryExpression — operations like 1 + 2, x * y
-// ArrayExpression — arrays like [1, 2, 3]
-// MemberExpression — array access like arr[0]
-// AssignmentExpression — assignments like x = 5
+
 // VariableDeclaration — declarations like let x = 5
-// ReturnStatement — return statements like return 5
 // IfStatement — if statements
 // WhileStatement — while loops
 // ForStatement — for loops
@@ -76,6 +67,11 @@ const returnStatementTestCases = [
     { sourceCode: 'return x[10]', argumentType: 'MemberExpression', argumentObject: 'x', argumentProperty: 10 },
     { sourceCode: 'return 5', argumentType: 'NumberLiteral', argumentValue: 5 },
     { sourceCode: 'return "hello"', argumentType: 'StringLiteral', argumentValue: 'hello' },
+]
+
+const variableDeclarationTestCases = [
+    { sourceCode: 'let x = 5', idName: 'x', initType: 'NumberLiteral', initValue: 5 },
+    { sourceCode: 'let y = "hello"', idName: 'y', initType: 'StringLiteral', initValue: 'hello' },
 ]
 
 console.log('Testing number literal parsing...\n');
@@ -305,7 +301,7 @@ returnStatementTestCases.forEach((sourceCode, index) => {
         const stringLiteralMatch = nodeArgumentType === 'StringLiteral' && nodeArgumentValue === argumentValue;
    
         if (nodeType === 'ReturnStatement' && (identifierMatch || memberExpressionMatch || numberLiteralMatch || stringLiteralMatch)) {
-            console.log(`Success: ${nodeType} with argument ${nodeArgumentType} ${nodeArgumentName}${nodeArgumentObject !== undefined ? `[${nodeArgumentProperty}]` : ''}${nodeArgumentValue !== undefined ? ` ${nodeArgumentValue}` : ''}`);
+            console.log(`Success: ${nodeType} with argument ${nodeArgumentType} ${nodeArgumentObject !== undefined ? `[${nodeArgumentProperty}]` : ''}${nodeArgumentValue !== undefined ? ` ${nodeArgumentValue}` : ''}`);
         } else {
             console.log(`Failure: expected ReturnStatement with argument ${nodeArgumentType} ${nodeArgumentName}${nodeArgumentObject !== undefined ? `[${nodeArgumentProperty}]` : ''}${nodeArgumentValue !== undefined ? ` ${nodeArgumentValue}` : ''}, got ${nodeType}${nodeArgumentType !== undefined ? ` with argument ${nodeArgumentType} ${nodeArgumentName}${nodeArgumentObject !== undefined ? `[${nodeArgumentProperty}]` : ''}${nodeArgumentValue !== undefined ? ` ${nodeArgumentValue}` : ''}` : ''}${nodeArgumentObject !== undefined ? `, argument ${nodeArgumentObject}` : ''}${nodeArgumentProperty !== undefined ? `, argument ${nodeArgumentProperty}` : ''}${nodeArgumentValue !== undefined ? `, argument ${nodeArgumentValue}` : ''}`);
         }
@@ -313,3 +309,35 @@ returnStatementTestCases.forEach((sourceCode, index) => {
         console.error('Error:', error.message);
     }
 });
+
+console.log('Testing variable declaration literal parsing...\n');
+
+variableDeclarationTestCases.forEach((sourceCode, index) => {
+    console.log(`\n=== Test ${index + 1}: ${sourceCode.sourceCode} ===`);
+
+    try {
+        const tokens = tokenise(sourceCode.sourceCode);
+        console.log('Tokens:', tokens.map(t => `${t.type}:${t.value}`).join(' '));
+        const ast = parse(tokens);
+        console.log('AST:', JSON.stringify(ast, null, 2));
+
+        const nodeType = ast.body[0]?.type;
+        const nodeIdName = ast.body[0]?.declarations[0]?.id?.name;  
+        const nodeInitType = ast.body[0]?.declarations[0]?.init?.type;  
+        const nodeInitValue = ast.body[0]?.declarations[0]?.init?.value;  
+        const nodeInitObject = ast.body[0]?.declarations[0]?.init?.object?.name;
+        const nodeInitProperty = ast.body[0]?.declarations[0]?.init?.property?.value;
+
+        const literalMatch = (nodeInitType === 'NumberLiteral' || nodeInitType === 'StringLiteral') && 
+                    nodeIdName === sourceCode.idName && 
+                    nodeInitType === sourceCode.initType && 
+                    nodeInitValue === sourceCode.initValue;
+        if (nodeType === 'VariableDeclaration' && literalMatch) {
+                        console.log(`Success: ${nodeType} with id ${nodeIdName}, init ${nodeInitType} ${nodeInitValue}`);
+         } else {
+            console.log(`Failure: expected VariableDeclaration with id ${sourceCode.idName}, init ${sourceCode.initType} ${sourceCode.initValue}, got ${nodeType}${nodeIdName !== undefined ? ` with id ${nodeIdName}` : ''}${nodeInitType !== undefined ? `, init ${nodeInitType} ${nodeInitValue}` : ''}${nodeInitValue !== undefined ? `, init ${nodeInitValue}` : ''}${nodeInitObject !== undefined ? `, init ${nodeInitObject}[${nodeInitProperty}]` : ''}${nodeInitProperty !== undefined ? `, init ${nodeInitProperty}` : ''}`);
+         }
+            } catch (error) {
+                        console.error('Error:', error.message);
+                    }
+                }); 
