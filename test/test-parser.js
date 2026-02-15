@@ -63,6 +63,21 @@ const memberExpressionTestCases = [
     { sourceCode: 'x[10]', object: 'x', property: 10 },
 ]
 
+const assignmentExpressionTestCases = [
+    { sourceCode: 'x = 5', leftType: 'Identifier', leftName: 'x', operator: '=', rightType: 'NumberLiteral', rightValue: 5 },
+    { sourceCode: 'arr[0] = 10', leftType: 'MemberExpression', leftObject: 'arr', leftProperty: 0, operator: '=', rightType: 'NumberLiteral', rightValue: 10 },
+    { sourceCode: 'myArray[5] = 20', leftType: 'MemberExpression', leftObject: 'myArray', leftProperty: 5, operator: '=', rightType: 'NumberLiteral', rightValue: 20 },
+    { sourceCode: 'x[10] = 30', leftType: 'MemberExpression', leftObject: 'x', leftProperty: 10, operator: '=', rightType: 'NumberLiteral', rightValue: 30 },
+]
+
+const returnStatementTestCases = [
+    { sourceCode: 'return 5', value: 5 },
+    { sourceCode: 'return "hello"', value: 'hello' },
+    { sourceCode: 'return arr[0]', value: 'arr[0]' },
+    { sourceCode: 'return myArray[5]', value: 'myArray[5]' },
+    { sourceCode: 'return x[10]', value: 'x[10]' },
+]
+
 console.log('Testing number literal parsing...\n');
 
 numberLiteralTestCases.forEach((sourceCode, index) => {
@@ -210,3 +225,57 @@ memberExpressionTestCases.forEach((sourceCode, index) => {
         console.error('Error:', error.message);
     }
 });
+
+console.log('Testing assignment expression literal parsing...\n');
+
+assignmentExpressionTestCases.forEach((sourceCode, index) => {
+    console.log(`\n=== Test ${index + 1}: ${sourceCode.sourceCode} ===`);
+
+    try {
+        const tokens = tokenise(sourceCode.sourceCode);
+        console.log('Tokens:', tokens.map(t => `${t.type}: ${t.value}`).join(' '));
+        const ast = parse(tokens);
+        console.log('AST:', JSON.stringify(ast, null, 2));
+        
+        const nodeType = ast.body[0]?.type;
+        const nodeLeftType = ast.body[0]?.left?.type;
+        const nodeLeftName = ast.body[0]?.left?.name; // For Identifier
+        const nodeLeftObject = ast.body[0]?.left?.object?.name; // For MemberExpression
+        const nodeLeftProperty = ast.body[0]?.left?.property?.value; // For MemberExpression
+        const nodeOperator = ast.body[0]?.operator; 
+        const nodeRightType = ast.body[0]?.right?.type;     
+        const nodeRightValue = ast.body[0]?.right?.value;
+
+        // Check Identifier case
+        const identifierMatch = nodeLeftType === 'Identifier' && 
+                               nodeLeftName === sourceCode.leftName &&
+                               nodeOperator === sourceCode.operator &&
+                               nodeRightType === sourceCode.rightType &&
+                               nodeRightValue === sourceCode.rightValue;
+
+        // Check MemberExpression case
+        const memberExpressionMatch = nodeLeftType === 'MemberExpression' &&
+                                      nodeLeftObject === sourceCode.leftObject &&
+                                      nodeLeftProperty === sourceCode.leftProperty &&
+                                      nodeOperator === sourceCode.operator &&
+                                      nodeRightType === sourceCode.rightType &&
+                                      nodeRightValue === sourceCode.rightValue;
+
+        if (nodeType === 'AssignmentExpression' && (identifierMatch || memberExpressionMatch)) {
+            if (nodeLeftType === 'Identifier') {
+                console.log(`Success: ${nodeType} with left ${nodeLeftType} ${nodeLeftName}, operator ${nodeOperator}, right ${nodeRightType} ${nodeRightValue}`);
+            } else {
+                console.log(`Success: ${nodeType} with left ${nodeLeftType} ${nodeLeftObject}[${nodeLeftProperty}], operator ${nodeOperator}, right ${nodeRightType} ${nodeRightValue}`);
+            }
+        } else {
+            if (sourceCode.leftType === 'Identifier') {
+                console.log(`Failure: expected AssignmentExpression with left ${sourceCode.leftType} ${sourceCode.leftName}, operator ${sourceCode.operator}, right ${sourceCode.rightType} ${sourceCode.rightValue}, got ${nodeType}${nodeLeftType !== undefined ? ` with left ${nodeLeftType} ${nodeLeftName}` : ''}${nodeOperator !== undefined ? `, operator ${nodeOperator}` : ''}${nodeRightType !== undefined ? `, right ${nodeRightType} ${nodeRightValue}` : ''}`);
+            } else {
+                console.log(`Failure: expected AssignmentExpression with left ${sourceCode.leftType} ${sourceCode.leftObject}[${sourceCode.leftProperty}], operator ${sourceCode.operator}, right ${sourceCode.rightType} ${sourceCode.rightValue}, got ${nodeType}${nodeLeftType !== undefined ? ` with left ${nodeLeftType} ${nodeLeftObject}[${nodeLeftProperty}]` : ''}${nodeOperator !== undefined ? `, operator ${nodeOperator}` : ''}${nodeRightType !== undefined ? `, right ${nodeRightType} ${nodeRightValue}` : ''}`);
+            }
+        }
+    } catch (error) {
+            console.error('Error:', error.message);
+        }
+    });
+    
