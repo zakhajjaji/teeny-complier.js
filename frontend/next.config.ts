@@ -1,15 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  webpack: (config, { isServer }) => {
-    // Allow importing CommonJS modules from the src directory
-    if (isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-      };
-    }
-    return config;
-  },
+  // Use webpack instead of Turbopack for better stability
+  // Turbopack can have issues with monorepo setups
 };
 
 export default nextConfig;

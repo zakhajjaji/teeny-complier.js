@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="group flex items-center gap-3">
             <div className="relative h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
-              <span className="text-xl font-bold text-primary-foreground">T</span>
+              <span className="text-xl font-bold text-foreground">T</span>
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-bold text-foreground leading-tight">Teeny Compiler</span>
