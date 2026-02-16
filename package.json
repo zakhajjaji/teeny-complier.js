@@ -1,14 +1,11 @@
 {
   "name": "teeny-complier",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "description": "Teeny Compiler. The javascript compiler with frontend visualisation",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/test-tokeniser.js && node test/test-parser.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
     "prettier": "^3.8.1"
   }
