@@ -17,27 +17,22 @@ export default function Compiler() {
     const [error, setError] = useState<string | null>(null);
 
     const handleCompile = useCallback(() => {
-
         setIsLoading(true);
         setError(null);
-       try {
-        setError(null);
+        try {
         const result = compileStepByStep(codeInput);
-        console.log('Compilation result:', result);
         setTokens(result.tokens); 
         setAst(result.ast);
         setJavascriptCode(result.javascriptCode);
-       } catch (error) {
-        if (error instanceof Error) {
-            setError(error.message);
-        } else {
-            setError(String(error));
-        }
-        setTokens([]);
-        setAst(null);
-        setJavascriptCode("");
-       }
-    }, [codeInput]);
+    } catch (error) {
+        setError(error instanceof Error ? error.message : String(error)); 
+        setTokens([]); 
+        setAst(null); 
+        setJavascriptCode(""); 
+    } finally {
+        setIsLoading(false);
+    }
+}, [codeInput]);
 
     return (
         <div className="container mx-auto px-4">   
@@ -67,7 +62,6 @@ export default function Compiler() {
                 <div className="bg-background border border-border p-4">
                     <h2 className="text-2xl font-bold mb-4">Tokens (Lexical Analysis)</h2>
                 <TokenDisplay tokens={tokens} />
-                <CopyButton text={JSON.stringify(tokens, null, 2)} />
                 </div>
 
                 <div className="bg-background border border-border p-4">
@@ -77,17 +71,18 @@ export default function Compiler() {
                             {ast ? JSON.stringify(ast, null, 2) : 'No AST available'}
                         </code>
                     </pre>
-                    <CopyButton text={JSON.stringify(ast, null, 2)} />
                 </div>
 
                 <div className="bg-background border border-border p-4">
-                    <h2 className="text-2xl font-bold mb-4">Generated JavaScript</h2>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-2xl font-bold">Generated JavaScript</h2>
+                        <CopyButton text={javascriptCode} />
+                    </div>
                     <pre className="bg-background/50 p-4 border border-border overflow-x-auto">
                         <code className="text-sm text-green-400">
                             {javascriptCode || 'No JavaScript generated'}
                         </code>
                     </pre>
-                    <CopyButton text={javascriptCode} />
                 </div>
             </div>
             )}
