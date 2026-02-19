@@ -1,18 +1,23 @@
 "use client";
 
-import { useState} from "react";
+import { useState, useCallback} from "react";
 import { compile, tokenise, parse, compileStepByStep } from "../lib/compiler";
 import { Token, AST } from "../lib/compiler";
 import TextArea from "./textArea";
 
 export default function Compiler() {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [codeInput, setCodeInput] = useState<string>(""); 
     const [tokens, setTokens] = useState<Token[]>([]);
     const [ast, setAst] = useState<AST | null>(null);
     const [javascriptCode, setJavascriptCode] = useState<string>("");
 
     const [error, setError] = useState<string | null>(null);
-    const handleCompile = () => {
+
+    const handleCompile = useCallback(() => {
+
+        setIsLoading(true);
+        setError(null);
        try {
         setError(null);
         const result = compileStepByStep(codeInput);
@@ -30,7 +35,7 @@ export default function Compiler() {
         setAst(null);
         setJavascriptCode("");
        }
-    }
+    }, [codeInput]);
 
     return (
         <div className="container mx-auto px-4">   
@@ -45,7 +50,9 @@ export default function Compiler() {
                 placeholder="Enter your code here"
                 
             />
-            <button onClick={handleCompile} className="bg-primary text-white p-2 mt-4 mx-auto block">Compile</button>
+            <button onClick={handleCompile} className="bg-primary text-white p-2 mt-4 mx-auto block" disabled={isLoading}>
+                {isLoading ? 'Compiling...' : 'Compile'}
+            </button>
             </div>
         {error && (
             <div className="mb-6 p-4 bg-red-900/20 border border-red-500">
