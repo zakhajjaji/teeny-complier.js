@@ -4,6 +4,8 @@ import { useState, useCallback} from "react";
 import { compile, tokenise, parse, compileStepByStep } from "../lib/compiler";
 import { Token, AST } from "../lib/compiler";
 import TextArea from "./textArea";
+import TokenDisplay from "./tokenDisplay";
+import CopyButton from "./copyButton";
 
 export default function Compiler() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -21,7 +23,7 @@ export default function Compiler() {
        try {
         setError(null);
         const result = compileStepByStep(codeInput);
-
+        console.log('Compilation result:', result);
         setTokens(result.tokens); 
         setAst(result.ast);
         setJavascriptCode(result.javascriptCode);
@@ -63,15 +65,9 @@ export default function Compiler() {
         {!error && tokens.length > 0 && (
             <div className="space-y-6">
                 <div className="bg-background border border-border p-4">
-                    <h2>Tokens (Lexical Analysis)</h2>
-                    <div>
-                        {tokens.map((token, index) => (
-                            <div key={index}>
-                                <span className="font-mono text-sm text-gray-500">{token.type}</span>
-                                <span className="font-mono text-sm text-gray-500 ml-3">{String(token.value)}</span>
-                            </div>
-                        ))}
-                    </div>
+                    <h2 className="text-2xl font-bold mb-4">Tokens (Lexical Analysis)</h2>
+                <TokenDisplay tokens={tokens} />
+                <CopyButton text={JSON.stringify(tokens, null, 2)} />
                 </div>
 
                 <div className="bg-background border border-border p-4">
@@ -81,6 +77,7 @@ export default function Compiler() {
                             {ast ? JSON.stringify(ast, null, 2) : 'No AST available'}
                         </code>
                     </pre>
+                    <CopyButton text={JSON.stringify(ast, null, 2)} />
                 </div>
 
                 <div className="bg-background border border-border p-4">
@@ -90,6 +87,7 @@ export default function Compiler() {
                             {javascriptCode || 'No JavaScript generated'}
                         </code>
                     </pre>
+                    <CopyButton text={javascriptCode} />
                 </div>
             </div>
             )}
