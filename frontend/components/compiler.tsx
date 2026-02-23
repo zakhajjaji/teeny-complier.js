@@ -17,11 +17,11 @@ export default function Compiler() {
   const [sourceCode, setSourceCode] = useState<string>('');
 
   // handles the compile button on click. 
-  const handleCompile = useCallback(() => {
+  const handleCompile = useCallback(() => { 
     setIsLoading(true);
     setError(null);
     try {
-      const result = compileStepByStep(codeInput);
+      const result = compileStepByStep(sourceCode);
       setTokens(result.tokens);
       setAst(result.ast);
       setJavascriptCode(result.javascriptCode);
@@ -33,14 +33,15 @@ export default function Compiler() {
     } finally {
       setIsLoading(false);
     }
-  }, [codeInput]);
+  }, [sourceCode]);
 
   const handleReset = useCallback(() => {
-    setCodeInput("");
+    setSourceCode("");
     setTokens([]);
     setAst(null);
     setJavascriptCode("");
     setError(null);
+    setSourceCode('');
   }, []);
 
   return (

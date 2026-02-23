@@ -29,28 +29,54 @@ function getSegments(source: string): Segment[] {
     if(!source) return [];
     try {
         const tokens = tokenise(source);
-        return tokensToSegments(tokens);
+        return tokensToSegments(source, tokens);
     } catch {
         return [{ text: source, type: 'error', line: 1, column: 1 }];
     }
 }
 
-// turns the tokens into segments, fallback no whitespace handling yet, remember this !! 
-function tokensToSegments(tokens: Token[]): Segment[] {
+// Turns tokens into segments. If tokens have start/end (character indices), we preserve
+// whitespace by adding a segment for each gap between tokens. Otherwise fallback: one segment per token.
+function tokensToSegments(source: string, tokens: Token[]): Segment[] {
     const segments: Segment[] = [];
-    for (const t of tokens) {
-        segments.push({ text: String(t.value), type: t.type, line: t.line ?? 1, column: t.column ?? 1 }); 
+    const first = tokens[0] as (Token & { start?: number; end?: number }) | undefined; // undefined if no tokens, remember this.
+    const hasOffsets = first != null && typeof first.start === "number" && typeof first.end === "number"; // double check the values are numbers !!. 
+
+    if (!hasOffsets) {
+        for (const t of tokens) {
+            segments.push({ text: String(t.value), type: t.type, line: t.line ?? 1, column: t.column ?? 1 });
+        }
+        return segments;
+    }
+
+    let pos = 0; // i,e position in the source code, where we at now.
+    for (const t of tokens as (Token & { start: number; end: number })[]) {
+        if (t.start > pos) { // if the start of the token is greater than the position, we add a whitespace segment.
+            const gap = source.slice(pos, t.start);
+            segments.push({ text: gap, type: "whitespace", line: t.line ?? 1, column: t.column ?? 1 });
+        }
+        segments.push({ // instead of using t.value, we use the original source from start to end of that token.
+            text: source.slice(t.start, t.end),
+            type: t.type,
+            line: t.line ?? 1,
+            column: t.column ?? 1,
+        });
+        pos = t.end; // update the position to the end of the token.
+    }
+    if (pos < source.length) { // any leftover text or whitespace at the end of the source code, add it to the segments.
+        segments.push({ text: source.slice(pos), type: "whitespace", line: 1, column: 1 }); 
     }
     return segments;
 }
 
 function typeToColour(type: string): string {
-    if(type === 'KEYWORD') return 'text-blue-500';
-    if(type === 'NUMBER') return 'text-green-500';
-    if(type === 'STRING') return 'text-purple-500';
-    if(type === 'OPERATOR') return 'text-yellow-500';
-    if(type === 'PUNCTUATION') return 'text-red-500';
-    return 'text-foreground';
+    if (type === "KEYWORD") return "text-blue-500";
+    if (type === "NUMBER") return "text-green-500";
+    if (type === "STRING") return "text-purple-500";
+    if (type === "OPERATOR") return "text-yellow-500";
+    if (type === "PUNCTUATION") return "text-red-500";
+    if (type === "whitespace") return ""; // keep spaces/newlines, no extra colour
+    return "text-foreground";
 }
 
 export default function CodeEditor({
