@@ -5,6 +5,7 @@ import { compileStepByStep, type Token, type AST } from '../lib/compiler';
 import TextArea from './textArea';
 import TokenDisplay from './tokenDisplay';
 import CopyButton from './copyButton';
+import CodeEditor from './codeEditor';
 
 export default function Compiler() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -13,7 +14,9 @@ export default function Compiler() {
   const [ast, setAst] = useState<AST | null>(null);
   const [javascriptCode, setJavascriptCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [sourceCode, setSourceCode] = useState<string>('');
 
+  // handles the compile button on click. 
   const handleCompile = useCallback(() => {
     setIsLoading(true);
     setError(null);
@@ -43,14 +46,13 @@ export default function Compiler() {
   return (
     <div className="container mx-auto px-4">
       <div className="mb-6">
-        <TextArea
-          value={codeInput}
-          onChange={(e) => setCodeInput(e.target.value)}
-          error={error}
-          className="w-3/4 h-1/2 resize bg-background border border-border mx-auto p-10"
-          rows={10}
-          cols={10}
-          placeholder="Enter your code here"
+        <CodeEditor
+          value={sourceCode}
+          onChange={(e) => setSourceCode(e.target.value)}
+          className="w-full min-h-[280px] resize-y"
+          rows={12}
+          cols={80}
+          placeholder="Enter your code here..."
         />
         <div className="flex items-center gap-8 mt-4">
           <button
