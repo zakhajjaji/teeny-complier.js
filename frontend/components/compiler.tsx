@@ -2,14 +2,12 @@
 
 import { useState, useCallback } from 'react';
 import { compileStepByStep, type Token, type AST } from '../lib/compiler';
-import TextArea from './textArea';
 import TokenDisplay from './tokenDisplay';
 import CopyButton from './copyButton';
 import CodeEditor from './codeEditor';
 
 export default function Compiler() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [codeInput, setCodeInput] = useState<string>('');
   const [tokens, setTokens] = useState<Token[]>([]);
   const [ast, setAst] = useState<AST | null>(null);
   const [javascriptCode, setJavascriptCode] = useState<string>('');

@@ -1,6 +1,6 @@
-const { tokenise } = require('../../src/tokeniser.js');
-const { parse } = require('../../src/parser.js');
-const { compile, generateJavaScript } = require('../../src/index.js');
+import { tokenise } from '../../src/tokeniser.js';
+import { parse } from '../../src/parser.js';
+import { compile, generateJavaScript } from '../../src/index.js';
 
 function compileStepByStep(sourceCode) {
     const tokens = tokenise(sourceCode);        // Use the imported tokenise
@@ -12,7 +12,7 @@ function compileStepByStep(sourceCode) {
         javascriptCode
     };
 }
-module.exports = { tokenise, parse, compile, compileStepByStep };
+export { tokenise, parse, compile, compileStepByStep };
 
 
 // Backend (src/)

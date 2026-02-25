@@ -5,10 +5,15 @@ export interface Token {
     column?: number;
 }
 
-export interface AST {
+export interface ASTNode {
     type: string;
-    body: any[];
-    [key: string]: any;
+    // Other properties on AST nodes can be any JSON-serialisable value.
+    // Kept this as unknown (not any) so TypeScript forces narrowing
+    [key: string]: unknown;
+}
+
+export interface AST extends ASTNode {
+    body: ASTNode[];
 }
 
 export interface CompilationResult {
@@ -17,7 +22,7 @@ export interface CompilationResult {
     javascriptCode: string;
 }
 
-const compilerModule = require('./compiler.js');
+import * as compilerModule from './compiler.js';
 
 export function tokenise(sourceCode: string): Token[] {
     return compilerModule.tokenise(sourceCode);
