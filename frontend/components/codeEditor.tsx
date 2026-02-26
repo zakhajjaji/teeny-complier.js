@@ -53,18 +53,23 @@ function tokensToSegments(source: string, tokens: Token[]): Segment[] {
     for (const t of tokens as (Token & { start: number; end: number })[]) {
         if (t.start > pos) { // if the start of the token is greater than the position, we add a whitespace segment.
             const gap = source.slice(pos, t.start);
-            segments.push({ text: gap, type: "whitespace", line: t.line ?? 1, column: t.column ?? 1 });
+            segments.push({ text: gap, type: "whitespace", line: t.line ?? 0, column: t.column ?? 0 });
+            console.log("gap", gap);
+            console.log("t.start", t.start);
+            console.log("t.end", t.end);
+            console.log("t.line", t.line);
+            console.log("t.column", t.column);
         }
         segments.push({ // instead of using t.value, we use the original source from start to end of that token.
             text: source.slice(t.start, t.end),
             type: t.type,
-            line: t.line ?? 1,
-            column: t.column ?? 1,
+            line: t.line ?? 0,
+            column: t.column ?? 0,
         });
         pos = t.end; // update the position to the end of the token.
     }
     if (pos < source.length) { // any leftover text or whitespace at the end of the source code, add it to the segments.
-        segments.push({ text: source.slice(pos), type: "whitespace", line: 1, column: 1 }); 
+        segments.push({ text: source.slice(pos), type: "whitespace", line: 0, column: 0 }); 
     }
     return segments;
 }
@@ -75,7 +80,7 @@ function typeToColour(type: string): string {
     if (type === "STRING") return "text-purple-500";
     if (type === "OPERATOR") return "text-yellow-500";
     if (type === "PUNCTUATION") return "text-red-500";
-    if (type === "whitespace") return ""; // keep spaces/newlines, no extra colour
+    if (type === "whitespace") return " "; // keep spaces/newlines, no extra colour
     return "text-foreground";
 }
 

@@ -1,6 +1,6 @@
-import { tokenise } from '../../src/tokeniser.js';
-import { parse } from '../../src/parser.js';
-import { compile, generateJavaScript } from '../../src/index.js';
+import { tokenise } from './backend/tokeniser.js';
+import { parse } from './backend/parser.js';
+import { compile, generateJavaScript } from './backend/index.js';
 
 function compileStepByStep(sourceCode) {
     const tokens = tokenise(sourceCode);        // Use the imported tokenise
