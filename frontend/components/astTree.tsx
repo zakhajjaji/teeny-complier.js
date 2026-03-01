@@ -1,6 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { type ASTNode } from "../lib/compiler";
+
+function getNodeLabel(node: Record<string, unknown>): string {
+    const type = (node.type as string) ?? "?";
+    if (typeof node.value !== "undefined") return `${type} (${JSON.stringify(node.value)})`;
+    if (typeof node.name !== "undefined") return `${type} (${node.name})`;
+    if (typeof node.operator !== "undefined") return `${type} (${node.operator})`;
+    return type;
+  }
 
 function getChildEdges(node: Record<string, unknown>): [string, unknown[]][] {
     if (!node || typeof node !== "object") return [];
