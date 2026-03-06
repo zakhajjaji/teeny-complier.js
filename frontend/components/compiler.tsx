@@ -5,6 +5,7 @@ import { compileStepByStep, type Token, type AST } from '../lib/compiler';
 import TokenDisplay from './tokenDisplay';
 import CopyButton from './copyButton';
 import CodeEditor from './codeEditor';
+import AstTree from './astTree';
 
 export default function Compiler() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -88,12 +89,8 @@ export default function Compiler() {
           </div>
 
           <div className="bg-background border border-border p-4">
-            <h2>AST (Abstract Syntax Tree)</h2>
-            <pre className="bg-background/50 p-4 border border-border overflow-x-auto">
-              <code className="text-sm">
-                {ast ? JSON.stringify(ast, null, 2) : 'No AST available'}
-              </code>
-            </pre>
+            <h2 className="text-2xl font-bold mb-4">AST (Abstract Syntax Tree)</h2>
+            <AstTree ast={ast} />
           </div>
 
           <div className="bg-background border border-border p-4">
