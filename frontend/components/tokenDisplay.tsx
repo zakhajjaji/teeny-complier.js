@@ -28,15 +28,15 @@ export default function TokenDisplay({ tokens }: { tokens: Token[] }) {
   }
 
   return (
-    <div className="bg-muted/20 border border-border/50 p-3">
+    <div className="rounded-md bg-muted/20 border border-border/50 p-3">
       <button
         type="button"
-        className="w-full text-left flex items-center gap-2 py-1.5 px-2 hover:bg-muted/40 transition-colors text-foreground font-semibold text-sm"
+        className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted/40 transition-colors text-foreground font-semibold text-sm"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="text-muted-foreground">{isOpen ? '▼' : '▶'}</span>
         <span>Tokens</span>
-        <span className="text-sm font-normal text-muted-foreground">
+        <span className="text-xs font-normal text-muted-foreground">
           ({tokens.length} token{tokens.length === 1 ? '' : 's'})
         </span>
       </button>

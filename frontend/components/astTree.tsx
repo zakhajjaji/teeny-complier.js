@@ -61,18 +61,18 @@ export default function AstTree({ ast }: { ast: Record<string, unknown> | null }
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="font-bold text-sm bg-muted/20 border border-border/50 p-3">
+    <div className="bg-muted/20 border border-border/50 p-3">
       <button
         type="button"
-        className="w-full text-left flex items-center gap-2 py-1.5 px-2 hover:bg-muted/40 transition-colors text-foreground font-bold"
+        className="w-full text-left flex items-center gap-2 py-1.5 px-2 hover:bg-muted/40 transition-colors text-foreground font-semibold text-sm"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="text-muted-foreground">{isOpen ? "▼" : "▶"}</span>
         <span>AST tree</span>
-        <span className="text-sm font-normal text-muted-foreground">({Object.keys(ast).length} keys)</span>
+        <span className="text-xs font-normal text-muted-foreground">(tree)</span>
       </button>
       {isOpen && (
-        <div className="mt-5 pl-2 pt-2 border-t border-border/50">
+        <div className="mt-3 pt-2 border-t border-border/50">
           <AstNode node={ast} />
         </div>
       )}
