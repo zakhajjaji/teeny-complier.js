@@ -14,6 +14,7 @@ export default function Compiler() {
   const [javascriptCode, setJavascriptCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [sourceCode, setSourceCode] = useState<string>('');
+  const [isLexicalAnalysisOpen, setIsLexicalAnalysisOpen] = useState<boolean>(false);
 
   // handles the compile button on click. 
   const handleCompile = useCallback(() => { 
@@ -85,7 +86,10 @@ export default function Compiler() {
             <h2 className="text-2xl font-bold mb-4">
               Tokens (Lexical Analysis)
             </h2>
-            <TokenDisplay tokens={tokens} />
+            <button className="hover:text-primary text-muted-foreground text-lg font-bold mt-1 cursor-pointer" onClick={() => setIsLexicalAnalysisOpen(!isLexicalAnalysisOpen)}> Open Lexical Analysis <span className="text-xs">({tokens.length} tokens)</span>
+              {isLexicalAnalysisOpen ? " ▼" : " ▶"}
+            </button>
+            {isLexicalAnalysisOpen && <TokenDisplay tokens={tokens} />}
           </div>
 
           <div className="bg-background border border-border p-4">

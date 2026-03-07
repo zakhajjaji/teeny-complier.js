@@ -37,14 +37,16 @@ function getChildEdges(node: Record<string, unknown>): [string, unknown[]][] {
   const edges = getChildEdges(n);
 
   return (
-    <div className="ml-4 border-l border-border pl-2">
-      <div className="font-mono text-sm">
-        {label && <span className="text-muted-foreground">{label}: </span>}
-        {getNodeLabel(n)}
+    <div className="ml-3 pl-3 border-l-2 border-primary/20 my-1">
+      <div className="font-mono text-sm flex items-baseline gap-2 flex-wrap">
+        {label && (
+          <span className="text-muted-foreground/80 text-xs uppercase tracking-wide">{label}</span>
+        )}
+        <span className="font-medium text-foreground">{getNodeLabel(n)}</span>
       </div>
       {edges.map(([key, children]) => (
-        <div key={key}>
-          <div className="text-muted-foreground text-xs mt-1">{key}</div>
+        <div key={key} className="mt-2">
+          <div className="text-muted-foreground/70 text-xs mb-0.5">{key}</div>
           {children.map((child, i) => (
             <AstNode key={`${key}-${i}`} node={child} label={key} />
           ))}
@@ -55,15 +57,25 @@ function getChildEdges(node: Record<string, unknown>): [string, unknown[]][] {
 }
 
 export default function AstTree({ ast }: { ast: Record<string, unknown> | null }) {
-  if (!ast) return <p className="text-foreground">No AST</p>;
-  const [isOpen, setIsOpen] = useState(false); 
+  if (!ast) return <p className="text-muted-foreground">No AST</p>;
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="font-mono text-sm">
-      <button className="hover:text-primary text-muted-foreground text-lg font-bold mt-1 cursor-pointer" onClick={() => setIsOpen(!isOpen)}> Open AST <span className="text-xs">({Object.keys(ast).length} nodes)</span>
-        {isOpen ? " ▼" : " ▶"}
+    <div className="font-bold text-sm bg-muted/20 border border-border/50 p-3">
+      <button
+        type="button"
+        className="w-full text-left flex items-center gap-2 py-1.5 px-2 hover:bg-muted/40 transition-colors text-foreground font-bold"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="text-muted-foreground">{isOpen ? "▼" : "▶"}</span>
+        <span>AST tree</span>
+        <span className="text-sm font-normal text-muted-foreground">({Object.keys(ast).length} keys)</span>
       </button>
-      {isOpen && <AstNode node={ast} />}
+      {isOpen && (
+        <div className="mt-5 pl-2 pt-2 border-t border-border/50">
+          <AstNode node={ast} />
+        </div>
+      )}
     </div>
   );
 }
