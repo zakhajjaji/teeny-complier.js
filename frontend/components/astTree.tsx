@@ -57,8 +57,8 @@ function getChildEdges(node: Record<string, unknown>): [string, unknown[]][] {
 }
 
 export default function AstTree({ ast }: { ast: Record<string, unknown> | null }) {
-  if (!ast) return <p className="text-muted-foreground">No AST</p>;
   const [isOpen, setIsOpen] = useState(true);
+  if (!ast) return <p className="text-muted-foreground">No AST</p>;
 
   return (
     <div className="bg-muted/20 border border-border/50 p-3">

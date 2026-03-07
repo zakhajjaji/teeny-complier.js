@@ -127,7 +127,7 @@ function parse(tokens) {
         current++; 
         let init = null;
         if (current < tokens.length && tokens[current].value !== ';') {
-          const beforeWalk = current; // Save position before walk()
+         // const beforeWalk = current; // Save position before walk()
           init = walk();
           while (current < tokens.length && tokens[current].type === 'WHITESPACE') {
             current++;
