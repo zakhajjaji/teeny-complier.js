@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
+            <div className="h-6 w-6  bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-xs">T</span>
             </div>
             <span className="text-sm text-muted-foreground">Teeny Compiler</span>
