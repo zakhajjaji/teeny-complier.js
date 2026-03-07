@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { type ASTNode } from "../lib/compiler";
+import { useState } from "react";
 
 function getChildEdges(node: Record<string, unknown>): [string, unknown[]][] {
     if (!node || typeof node !== "object") return [];
@@ -56,10 +55,15 @@ function getChildEdges(node: Record<string, unknown>): [string, unknown[]][] {
 }
 
 export default function AstTree({ ast }: { ast: Record<string, unknown> | null }) {
-  if (!ast) return <p className="text-muted-foreground">No AST</p>;
+  if (!ast) return <p className="text-foreground">No AST</p>;
+  const [isOpen, setIsOpen] = useState(false); 
+
   return (
     <div className="font-mono text-sm">
-      <AstNode node={ast} />
+      <button className="hover:text-primary text-muted-foreground text-lg font-bold mt-1 cursor-pointer" onClick={() => setIsOpen(!isOpen)}> Open AST <span className="text-xs">({Object.keys(ast).length} nodes)</span>
+        {isOpen ? " ▼" : " ▶"}
+      </button>
+      {isOpen && <AstNode node={ast} />}
     </div>
   );
 }
