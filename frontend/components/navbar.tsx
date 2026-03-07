@@ -40,7 +40,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="group flex items-center gap-3">
-            <div className="relative h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+            <div className="relative h-10 w-10 -lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
               <span className="text-xl font-bold text-foreground">T</span>
             </div>
             <div className="flex flex-col">
@@ -70,22 +70,22 @@ export default function Navbar() {
           {/* Mobile */}
           <button 
             onClick={toggleMenu}
-            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            className="md:hidden p-2 hover:bg-muted transition-colors"
             aria-label="Toggle menu"
           >
             <div className="w-6 h-6 flex flex-col justify-center gap-1.5">
               <span 
-                className={`block h-0.5 w-full bg-foreground rounded-full transition-all duration-300 ${
+                className={`block h-0.5 w-full bg-foreground -full transition-all duration-300 ${
                   isOpen ? "rotate-45 translate-y-2" : ""
                 }`}
               ></span>
               <span 
-                className={`block h-0.5 w-full bg-foreground rounded-full transition-all duration-300 ${
+                className={`block h-0.5 w-full bg-foreground -full transition-all duration-300 ${
                   isOpen ? "opacity-0" : ""
                 }`}
               ></span>
               <span 
-                className={`block h-0.5 w-full bg-foreground rounded-full transition-all duration-300 ${
+                className={`block h-0.5 w-full bg-foreground -full transition-all duration-300 ${
                   isOpen ? "-rotate-45 -translate-y-2" : ""
                 }`}
               ></span>
