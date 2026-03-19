@@ -3,9 +3,9 @@
 import { useState, useCallback } from 'react';
 import { compileStepByStep, type Token, type AST } from '../lib/compiler';
 import TokenDisplay from './tokenDisplay';
-import CopyButton from './copyButton';
 import CodeEditor from './codeEditor';
 import AstTree from './astTree';
+import JsOutput from './JsOuput';
 
 export default function Compiler() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -14,7 +14,6 @@ export default function Compiler() {
   const [javascriptCode, setJavascriptCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [sourceCode, setSourceCode] = useState<string>('');
-  const [isLexicalAnalysisOpen, setIsLexicalAnalysisOpen] = useState<boolean>(false);
 
   // handles the compile button on click. 
   const handleCompile = useCallback(() => { 
@@ -86,10 +85,7 @@ export default function Compiler() {
             <h2 className="text-2xl font-bold mb-4">
               Tokens (Lexical Analysis)
             </h2>
-            <button className="hover:text-primary text-muted-foreground text-lg font-bold mt-1 cursor-pointer" onClick={() => setIsLexicalAnalysisOpen(!isLexicalAnalysisOpen)}> Open Lexical Analysis <span className="text-xs">({tokens.length} tokens)</span>
-              {isLexicalAnalysisOpen ? " ▼" : " ▶"}
-            </button>
-            {isLexicalAnalysisOpen && <TokenDisplay tokens={tokens} />}
+            <TokenDisplay tokens={tokens} />
           </div>
 
           <div className="bg-background border border-border p-4">
@@ -98,15 +94,7 @@ export default function Compiler() {
           </div>
 
           <div className="bg-background border border-border p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Generated JavaScript</h2>
-              <CopyButton text={javascriptCode} />
-            </div>
-            <pre className="bg-background/50 p-4 border border-border overflow-x-auto">
-              <code className="text-sm text-green-400">
-                {javascriptCode || 'No JavaScript generated'}
-              </code>
-            </pre>
+            <JsOutput code={javascriptCode} error={error} isLoading={isLoading} />
           </div>
         </div>
       )}

@@ -63,6 +63,13 @@ function parse(tokens) {
           type: 'ReturnStatement',
           argument: argument
         };
+    } else if (token.type === 'KEYWORD' && token.value === 'print') {
+        current++;
+        const argument = current < tokens.length ? walk() : null;
+        return {
+          type: 'PrintStatement',
+          argument: argument
+        };
      
       } else if (token.type === 'KEYWORD' && token.value === 'if') {
         current++;   
@@ -127,7 +134,6 @@ function parse(tokens) {
         current++; 
         let init = null;
         if (current < tokens.length && tokens[current].value !== ';') {
-          const beforeWalk = current; // Save position before walk()
           init = walk();
           while (current < tokens.length && tokens[current].type === 'WHITESPACE') {
             current++;
