@@ -1,9 +1,9 @@
-// Main compiler entry point
+// Main compiler entry point (ES module)
 
-const { tokenise } = require('./tokeniser');
-const { parse } = require('./parser');
+import { tokenise } from './tokeniser.js';
+import { parse } from './parser.js';
 
-function compile(sourceCode) {
+export function compile(sourceCode) {
   // Tokenise the source code
   const tokens = tokenise(sourceCode);
   // Parse the tokens into an AST
@@ -13,14 +13,11 @@ function compile(sourceCode) {
   return javascriptCode;
 }
 
-function generateJavaScript(ast) {
+export function generateJavaScript(ast) {
+  void ast; // TODO: use ast when generator is implemented
   const javascriptCode = [];
   return javascriptCode;
 }
-
-const complier = { compile, generateJavaScript };
-
-module.exports = complier;
 
 // compile is the main function that will be called to compile the source code
 // sourceCode is a parameter, it is a variable that will HOLD whatever code string you pass in later 
