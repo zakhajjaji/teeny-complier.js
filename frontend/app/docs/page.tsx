@@ -22,7 +22,7 @@ export default function DocsPage() {
             <Link
               key={section.id}
               href={`/docs/${section.id}`}
-              className="block rounded-md border border-border/60 bg-muted/20 p-4 hover:bg-muted/40 transition-colors"
+              className="block border border-border/60 bg-muted/20 p-4 hover:bg-muted/40 transition-colors"
             >
               <h2 className="text-xl font-semibold text-foreground mb-1">
                 {section.title}
