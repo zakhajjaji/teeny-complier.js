@@ -50,8 +50,8 @@ export default function Navbar() {
           </Link>
           <div className="hidden md:flex items-center gap-8">
             {[
-              { href: "#features", label: "Features" },
-              { href: "#try-it", label: "Try It" },
+              { href: "/#features", id: "features", label: "Features" },
+              { href: "/#try-it", label: "Try It" },
               { href: "https://github.com/zakhajjaji/teeny-complier.js", label: "GitHub", external: true },
             ].map((item) => (
               <Link
@@ -101,8 +101,8 @@ export default function Navbar() {
         >
           <div className="py-4 space-y-3 border-t border-border mt-2">
             {[
-              { href: "#features", label: "Features" },
-              { href: "#try-it", label: "Try It" },
+              { href: "/#features", label: "Features" },
+              { href: "/#try-it", label: "Try It" },
               { href: "https://github.com/zakhajjaji/teeny-complier.js", label: "GitHub", external: true },
             ].map((item) => (
               <Link

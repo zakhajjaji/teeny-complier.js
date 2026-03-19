@@ -4,7 +4,7 @@ import { useState } from "react";
 import PixelBlast from "./ui/pixel-blast";
 
 export default function Features() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <section
@@ -26,15 +26,16 @@ export default function Features() {
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-foreground mb-3">
                 Features
+                <span className="text-muted-foreground font-mono text-2xl ml-6 pt-20">
+              {isOpen ? "▼" : "▶"}
+            </span>
               </h2>
+           
               <p className="text-muted-foreground max-w-2xl">
                 A bold, interactive compiler playground: see tokenisation, parsing (AST) and
                 code generation in action.
               </p>
             </div>
-            <span className="text-muted-foreground font-mono text-lg pt-1">
-              {isOpen ? "▼" : "▶"}
-            </span>
           </button>
 
           {isOpen && (
