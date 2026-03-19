@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useState, useRef } from "react";
 import PixelBlast from "./ui/pixel-blast";
+import Link from "next/link";
 
 function HoverButton({ text, isPrimary }: { text: string; isPrimary: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -86,8 +87,8 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="flex items-center gap-8"
             >
-              <HoverButton text="Start compiling" isPrimary />
-              <HoverButton text="View docs" isPrimary={false} />
+              <Link href="/#try-it"><HoverButton text="Start compiling" isPrimary /></Link>
+              <Link href="/docs"><HoverButton text="View docs" isPrimary={false} /></Link>
             </motion.div>
           </div>
         </div>
