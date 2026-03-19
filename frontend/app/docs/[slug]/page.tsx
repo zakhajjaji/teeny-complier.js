@@ -5,52 +5,48 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-function renderStep(step: any) {
-  return (
-    <div key={step.title} className="mt-6">
-      <h2 className="text-lg font-semibold mb-2">{step.title}</h2>
+function renderStep(step: string | { title: string; items: string[]; description: string; sampleProgram: string; panels: { name: string; description: string; bullets: string[] }[]; suggestions: string[] }) {
+  if (typeof step === 'string') {
+    return <p key={step}>{step}</p>;
+  }
 
-      {step.items && (
+  const stepData = step as { title: string; items: string[]; description: string; sampleProgram: string; panels: { name: string; description: string; bullets: string[] }[]; suggestions: string[] };
+
+  return (
+    <div key={stepData.title} className="mt-6">
+      <h2 className="text-lg font-semibold mb-2">{stepData.title}</h2>
+
+      {stepData.items && (
         <ul className="list-disc list-inside text-muted-foreground space-y-1">
-          {step.items.map((item: string) => (
+          {stepData.items.map((item: string) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
       )}
 
-      {step.description && <p className="text-muted-foreground mb-2">{step.description}</p>}
+      {stepData.description && <p className="text-muted-foreground mb-2">{stepData.description}</p>}
 
       {step.sampleProgram && (
         <pre className="bg-muted/40 border border-border p-3 text-sm font-mono overflow-x-auto mb-2 whitespace-pre">
-          {step.sampleProgram}
+          {stepData.sampleProgram}
         </pre>
       )}
 
-      {step.panels && (
+      {stepData.panels && (
         <ul className="space-y-4 text-muted-foreground">
-          {step.panels.map((panel: any) => (
+          {stepData.panels.map((panel: { name: string; description: string; bullets: string[] }) => (
             <li key={panel.name}>
               <p className="font-semibold text-foreground">{panel.name}</p>
-              {panel.description && (
-                <p className="text-muted-foreground mb-1">{panel.description}</p>
-              )}
-              {panel.bullets && (
-                <ul className="list-disc list-inside ml-4 space-y-1">
-                  {panel.bullets.map((b: string) => (
-                    <li key={b}>{b}</li>
-                  ))}
-                </ul>
-              )}
+              {panel.description && <p className="text-muted-foreground mb-1">{panel.description}</p>}
+              {panel.bullets && <ul className="list-disc list-inside ml-4 space-y-1">{panel.bullets.map((b: string) => <li key={b}>{b}</li>)}</ul>}
             </li>
           ))}
         </ul>
       )}
 
-      {step.suggestions && (
+      {stepData.suggestions && (
         <ul className="list-disc list-inside ml-4 text-muted-foreground space-y-1">
-          {step.suggestions.map((s: string) => (
-            <li key={s}>{s}</li>
-          ))}
+          {stepData.suggestions.map((suggestion: string) => <li key={suggestion}>{suggestion}</li>)}
         </ul>
       )}
     </div>
@@ -78,7 +74,7 @@ export default async function DocSectionPage({ params }: PageProps) {
           )}
         </header>
 
-        {section.steps.map((step: any) => renderStep(step))}
+        {section.steps.map((step: unknown) => renderStep(step as string | { title: string; items: string[]; description: string; sampleProgram: string; panels: { name: string; description: string; bullets: string[] }[]; suggestions: string[] }))}
       </div>
     </main>
   );
