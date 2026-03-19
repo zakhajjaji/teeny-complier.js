@@ -13,12 +13,14 @@ function compile(sourceCode) {
   return javascriptCode;
 }
 
-function generateJavaScript(_ast) {
+function generateJavaScript(ast) {
   const javascriptCode = [];
   return javascriptCode;
 }
 
-module.exports = { compile, generateJavaScript };
+const complier = { compile, generateJavaScript };
+
+module.exports = complier;
 
 // compile is the main function that will be called to compile the source code
 // sourceCode is a parameter, it is a variable that will HOLD whatever code string you pass in later 
